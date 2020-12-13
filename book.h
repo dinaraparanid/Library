@@ -10,12 +10,15 @@
 #include <algorithm>
 #include <unordered_set>
 
-#define __TRY__(FUNCTION)		\
-try { FUNCTION; }			\
+#include <QString>
+#include <QDebug>
+
+#define __TRY__(FUNCTION)           \
+try { FUNCTION; }                   \
 catch (const std::logic_error& e)	\
-{					\
-    std::fputs(e.what(), stderr);	\
-    std::terminate();		\
+{                                   \
+    qDebug() << e.what();           \
+    std::terminate();               \
 }
 
 namespace
@@ -87,9 +90,9 @@ namespace booksys
         friend class TheBook;
         friend class read::Reader;
 
-        using date = std::tuple<std::uint8_t, std::uint8_t, std::uint16_t>;	                              // day / month / year
-        std::vector<std::tuple<std::shared_ptr<read::Reader>, std::pair<date, date>, std::uint8_t>> readers_; // reader, dates and status
-        bool is_using_{ false };									      // using status
+        using date = std::tuple<std::uint8_t, std::uint8_t, std::uint16_t>;                                     // day / month / year
+        std::vector<std::tuple<std::shared_ptr<read::Reader>, std::pair<date, date>, std::uint8_t>> readers_;   // reader, dates and status
+        bool is_using_{ false };                                                                                // using status
         std::string title_;
         std::string author_;
 
