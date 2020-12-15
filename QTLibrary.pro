@@ -10,11 +10,14 @@ CONFIG += c++11
 
 SOURCES += \
     book.cpp \
+    changemenu.cpp \
     main.cpp \
+    mainwindow.cpp \
     reader.cpp
 
 HEADERS += \
     book.h \
+    changemenu.h \
     mainwindow.h \
     reader.h
 
