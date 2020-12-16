@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <changemenu.h>
 #include <QApplication>
+#include <iostream>
 
 int main(int argc, char** argv)
 {
@@ -8,9 +9,6 @@ int main(int argc, char** argv)
 
     MainWindow mainMenu;
     mainMenu.show();
-
-   /* ChangeMenu<_, _> ask("Title", "Input name", "Input family");
-    ask.show();*/
 
     return a.exec();
 }

@@ -9,31 +9,24 @@
 #include <QLineEdit>
 #include <QPushButton>
 
-template<class T> class ChangeMenu : public QDialog
+class ChangeMenu : public QDialog
 {
     Q_OBJECT
 
 public:
-    ChangeMenu(QString&&, QString&&, QString&&,
-               std::shared_ptr<T>, std::function<void(T)>);
-    ChangeMenu(const QString&, const QString&, const QString&,  // move constructor
-               std::shared_ptr<T>, std::function<void(T)>);     // copy constructor
-    void change();                                              // change something
+    ChangeMenu(QString&&, QString&&, std::shared_ptr<QString>);
+    ChangeMenu(const QString&, const QString&, const std::shared_ptr<QString>);
     ~ChangeMenu();
-
-public slots:
+signals:
     void okPressed();
 
-signals:
-    void changed();
+public slots:
+    void change();
 
 private:
-    std::shared_ptr<T> changable_;              // something, that we need to change (book or reader)
-    std::function<void(T)> func_;               // change function
-    QLabel* firstWhat_;                         // Input first (name, title of book ...)
-    QLabel* secondWhat_;                        // Input second (family, author ...)
-    QLineEdit* firstInput_;
-    QLineEdit* secondInput_;
+    std::shared_ptr<QString> changable_;     // something, that we need to change (book or reader)
+    QLabel what_;                            // Input first (name, title of book ...)
+    QLineEdit input_;
     QPushButton* ok_;
     QPushButton* cancel_;
 };
