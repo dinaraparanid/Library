@@ -4,6 +4,7 @@
 #include <memory>
 #include <functional>
 
+#include <QMenu>
 #include <QDialog>
 #include <QLabel>
 #include <QLineEdit>
@@ -14,8 +15,9 @@ class ChangeMenu : public QDialog
     Q_OBJECT
 
 public:
-    ChangeMenu(QString&&, QString&&, std::shared_ptr<QString>);
-    ChangeMenu(const QString&, const QString&, const std::shared_ptr<QString>);
+    ChangeMenu(QString&&, QString&&);
+    ChangeMenu(const QString&, const QString&);
+    void addChangable(std::shared_ptr<QString>);
     ~ChangeMenu();
 signals:
     void okPressed();

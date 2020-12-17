@@ -3,10 +3,8 @@
 
 #include <QMainWindow>
 #include <QPushButton>
-#include <QMenu>
 #include <QMenuBar>
-#include <QDialog>
-#include <QLabel>
+#include <QMenu>
 
 class MainWindow : public QMainWindow
 {

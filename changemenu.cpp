@@ -2,9 +2,7 @@
 #include <QFont>
 
 ChangeMenu::ChangeMenu(QString&& title,
-                       QString&& what,
-                       std::shared_ptr<QString> smthng) :
-    changable_(smthng),
+                       QString&& what) :
     what_(QLabel(what, this)),
     input_(QLineEdit(this)),
     ok_(new QPushButton("OK", this)),
@@ -29,9 +27,7 @@ ChangeMenu::ChangeMenu(QString&& title,
 }
 
 ChangeMenu::ChangeMenu(const QString& title,
-                       const QString& what,
-                       std::shared_ptr<QString> smthng) :
-    changable_(smthng),
+                       const QString& what) :
     what_(QLabel(what, this)),
     input_(QLineEdit(this)),
     ok_(new QPushButton("OK", this)),
@@ -61,9 +57,14 @@ ChangeMenu::~ChangeMenu()
     delete cancel_;
 }
 
+void ChangeMenu::addChangable(std::shared_ptr<QString> changable)
+{
+    changable_ = changable;
+}
+
 void ChangeMenu::change()
 {
-    *changable_ = input_.text();
-    qDebug(changable_->toStdString().c_str());
+    /**changable_ = input_.text();
+    qDebug(changable_->toStdString().c_str());*/
     emit okPressed();
 }
