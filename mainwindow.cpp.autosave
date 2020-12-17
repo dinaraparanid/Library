@@ -15,16 +15,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     QAction removeBook("Remove book");
     QAction getInfoBook("Get information about book");
 
-    QMenu editBook("Edit book");
-    editBook.addAction("Edit title");
-   // ChangeMenu* editTitleBook = new ChangeMenu("Edit title", "Input new title");
-
-    readerMenu_->addAction(&addBook);
-    readerMenu_->addAction(&removeBook);
-    readerMenu_->addAction(&getInfoBook);
-    readerMenu_->addMenu(&editBook);
-    readerMenu_->addAction("Kek");
-
 
 
     mainMenu_ = new QMenuBar(this);

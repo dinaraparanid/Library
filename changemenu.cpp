@@ -1,8 +1,7 @@
 #include "changemenu.h"
 #include <QFont>
 
-ChangeMenu::ChangeMenu(QString&& title,
-                       QString&& what) :
+InterfaceMenu::InterfaceMenu(QString&& title, QString&& what) noexcept :
     what_(QLabel(what, this)),
     input_(QLineEdit(this)),
     ok_(new QPushButton("OK", this)),
@@ -26,8 +25,7 @@ ChangeMenu::ChangeMenu(QString&& title,
     QObject::connect(cancel_, SIGNAL(pressed()), this, SLOT(close()));
 }
 
-ChangeMenu::ChangeMenu(const QString& title,
-                       const QString& what) :
+InterfaceMenu::InterfaceMenu(const QString& title, const QString& what) noexcept :
     what_(QLabel(what, this)),
     input_(QLineEdit(this)),
     ok_(new QPushButton("OK", this)),
@@ -46,25 +44,78 @@ ChangeMenu::ChangeMenu(const QString& title,
     what_.setGeometry(10, 50, 200, 30);
     input_.setGeometry(150, 50, 300, 30);
 
-    QObject::connect(ok_, SIGNAL(pressed()), this, SLOT(change()));
     QObject::connect(ok_, SIGNAL(pressed()), this, SLOT(close()));
     QObject::connect(cancel_, SIGNAL(pressed()), this, SLOT(close()));
 }
 
-ChangeMenu::~ChangeMenu()
-{
-    delete ok_;
-    delete cancel_;
+ChangeMenu::ChangeMenu(QString&& title, QString&& what) noexcept :
+    menu_(std::make_shared<InterfaceMenu>(title, what)) {
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(change()));
 }
 
-void ChangeMenu::addChangable(std::shared_ptr<QString> changable)
-{
-    changable_ = changable;
+ChangeMenu::ChangeMenu(const QString& title, const QString& what) noexcept :
+    menu_(std::make_shared<InterfaceMenu>(title, what)) {
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(change()));
 }
 
 void ChangeMenu::change()
 {
-    /**changable_ = input_.text();
-    qDebug(changable_->toStdString().c_str());*/
+    *changable_ = menu_->input_.text();
+    qDebug("%s", changable_->toStdString().c_str());
+    emit okPressed();
+}
+
+template<class T>AddMenu<T>::AddMenu(QString&& title, QString&& what) noexcept :
+    menu_(std::make_shared<InterfaceMenu>(title, what)) {
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(add()));
+}
+
+template<class T>AddMenu<T>::AddMenu(const QString& title, const QString& what) noexcept :
+    menu_(std::make_shared<InterfaceMenu>(title, what)) {
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(add()));
+}
+
+template<class T> void AddMenu<T>::add()
+{
+    const T pattern(params_.first, params_.second);
+
+    for (auto it = container_->begin(); it != container_->end(); ++it)
+    {
+        if (*it == pattern)
+        {
+            emit okPressed();
+            return;
+        }
+    }
+
+    container_->push_back(pattern);
+    qDebug("add");
+    emit okPressed();
+}
+
+template<class T>RemoveMenu<T>::RemoveMenu(QString&& title, QString&& what) noexcept :
+    menu_(std::make_shared<InterfaceMenu>(title, what)) {
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(remove()));
+}
+
+template<class T>RemoveMenu<T>::RemoveMenu(const QString& title, const QString& what) noexcept :
+    menu_(std::make_shared<InterfaceMenu>(title, what)) {
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(remove()));
+}
+
+template<class T> void RemoveMenu<T>::remove()
+{
+    const T pattern(params_.first, params_.second);
+
+    for (auto it = container_->begin(); it != container_->end(); ++it)
+    {
+        if (*it == pattern)
+        {
+            container_->erase(it);
+            qDebug("remove");
+            emit okPressed();
+        }
+    }
+
     emit okPressed();
 }
