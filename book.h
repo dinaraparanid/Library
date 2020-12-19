@@ -40,8 +40,8 @@ namespace booksys
             title_(title), author_(author) { isUsing_ = false; }
         ~Book() = default;
 
-        void changeTitle (QString&& title)       noexcept { title_ = title; }
-        void changeTitle (const QString& title)  noexcept { title_ = title; }
+        void changeTitle (QString&& title)       noexcept { title_  = title; }
+        void changeTitle (const QString& title)  noexcept { title_  = title; }
         void changeAuthor(QString&& author)      noexcept { author_ = author; }
         void changeAuthor(const QString& author) noexcept { author_ = author; }
 
@@ -62,7 +62,7 @@ namespace booksys
         QVector<Book> books_; // books with same params
 
     public:
-        TheBook(QString&& title, QString&& author)                noexcept :
+        TheBook(QString&& title, QString&& author)           noexcept :
             title_(title), author_(author) {}
         TheBook(const QString& title, const QString& author) noexcept :
             title_(title), author_(author) {}
@@ -73,8 +73,8 @@ namespace booksys
         [[nodiscard]] QString getTitle()        const noexcept { return title_; }
         [[nodiscard]] QString getAuthor()       const noexcept { return author_; }
 
-        void changeTitle(QString&& title)        noexcept { title_ = title; }
-        void changeTitle(const QString& title)   noexcept { title_ = title; }
+        void changeTitle(QString&& title)        noexcept { title_  = title; }
+        void changeTitle(const QString& title)   noexcept { title_  = title; }
         void changeAuthor(QString&& author)      noexcept { author_ = author; }
         void changeAuthor(const QString& author) noexcept { author_ = author; }
         void removeBook(const std::size_t ind)   noexcept { books_.erase(books_.begin() + ind); }
@@ -100,8 +100,8 @@ namespace booksys
 
         bool addBook(TheBook&&)                                            noexcept;
         bool addBook(const TheBook&)                                       noexcept;
-        bool addBook(QString&&, QString&&, QSet<QString>&&)                noexcept;
-        bool addBook(const QString&, const QString&, const QSet<QString>&) noexcept;
+        bool addBook(QString&&, QString&&)                                 noexcept;
+        bool addBook(const QString&, const QString&)                       noexcept;
 
         QVector<TheBook>::iterator find(TheBook&&)                         noexcept;
         QVector<TheBook>::iterator find(const TheBook&)                    noexcept;

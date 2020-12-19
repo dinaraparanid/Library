@@ -1,5 +1,8 @@
 #include "mainwindow.h"
-#include <changemenu.h>
+#include "messagedialog.h"
+#include "changemenu.h"
+#include "messagedialog.h"
+
 #include <QApplication>
 #include <iostream>
 

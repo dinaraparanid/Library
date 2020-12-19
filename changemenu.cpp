@@ -1,121 +1,146 @@
 #include "changemenu.h"
+#include "messagedialog.h"
 #include <QFont>
 
-InterfaceMenu::InterfaceMenu(QString&& title, QString&& what) noexcept :
-    what_(QLabel(what, this)),
-    input_(QLineEdit(this)),
-    ok_(new QPushButton("OK", this)),
-    cancel_(new QPushButton("Cancel", this))
+chng::Input1::Input1(QString&& title, QString&& what, QString* set) noexcept :
+    menu_(new SubMenu(title)),
+    what_(QLabel(what, menu_)),
+    input_(QLineEdit(menu_)),
+    set_(set)
 {
-    setGeometry(500, 500, 500, 150);
-    setFixedSize(size());
-    setWindowTitle(title);
+    menu_->ok_->setGeometry(320, 100, 75, 25);
+    menu_->cancel_->setGeometry(410, 100, 75, 25);
 
-    ok_->setGeometry(320, 100, 75, 25);
-    cancel_->setGeometry(410, 100, 75, 25);
-
-    what_.setFont(QFont("Calibri", 18, 5));
+    what_.setFont(QFont("Calibri", 12, 5));
     input_.setFont(QFont("Calibri Light", 15, 3, true));
+    input_.setPlaceholderText("Input something");
 
     what_.setGeometry(10, 50, 200, 30);
     input_.setGeometry(150, 50, 300, 30);
 
-    QObject::connect(ok_, SIGNAL(pressed()), this, SLOT(change()));
-    QObject::connect(ok_, SIGNAL(pressed()), this, SLOT(close()));
-    QObject::connect(cancel_, SIGNAL(pressed()), this, SLOT(close()));
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(setInput()));
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), menu_, SLOT(close()));
+    QObject::connect(menu_->cancel_, SIGNAL(pressed()), menu_, SLOT(close()));
 }
 
-InterfaceMenu::InterfaceMenu(const QString& title, const QString& what) noexcept :
-    what_(QLabel(what, this)),
-    input_(QLineEdit(this)),
-    ok_(new QPushButton("OK", this)),
-    cancel_(new QPushButton("Cancel", this))
+chng::Input1::Input1(const QString& title, const QString& what, QString* set) noexcept :
+    menu_(new SubMenu(title)),
+    what_(QLabel(what, menu_)),
+    input_(QLineEdit(menu_)),
+    set_(set)
 {
-    setGeometry(500, 500, 500, 150);
-    setFixedSize(size());
-    setWindowTitle(title);
+    menu_->ok_->setGeometry(320, 100, 75, 25);
+    menu_->cancel_->setGeometry(410, 100, 75, 25);
 
-    ok_->setGeometry(320, 100, 75, 25);
-    cancel_->setGeometry(410, 100, 75, 25);
-
-    what_.setFont(QFont("Calibri", 18, 5));
+    what_.setFont(QFont("Calibri", 12, 5));
     input_.setFont(QFont("Calibri Light", 15, 3, true));
+    input_.setPlaceholderText("Input something");
 
     what_.setGeometry(10, 50, 200, 30);
     input_.setGeometry(150, 50, 300, 30);
 
-    QObject::connect(ok_, SIGNAL(pressed()), this, SLOT(close()));
-    QObject::connect(cancel_, SIGNAL(pressed()), this, SLOT(close()));
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(setInput()));
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), menu_, SLOT(close()));
+    QObject::connect(menu_->cancel_, SIGNAL(pressed()), menu_, SLOT(close()));
 }
 
-ChangeMenu::ChangeMenu(QString&& title, QString&& what) noexcept :
-    menu_(std::make_shared<InterfaceMenu>(title, what)) {
-    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(change()));
-}
-
-ChangeMenu::ChangeMenu(const QString& title, const QString& what) noexcept :
-    menu_(std::make_shared<InterfaceMenu>(title, what)) {
-    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(change()));
-}
-
-void ChangeMenu::change()
+void chng::Input1::setInput()
 {
-    *changable_ = menu_->input_.text();
-    qDebug("%s", changable_->toStdString().c_str());
-    emit okPressed();
-}
-
-template<class T>AddMenu<T>::AddMenu(QString&& title, QString&& what) noexcept :
-    menu_(std::make_shared<InterfaceMenu>(title, what)) {
-    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(add()));
-}
-
-template<class T>AddMenu<T>::AddMenu(const QString& title, const QString& what) noexcept :
-    menu_(std::make_shared<InterfaceMenu>(title, what)) {
-    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(add()));
-}
-
-template<class T> void AddMenu<T>::add()
-{
-    const T pattern(params_.first, params_.second);
-
-    for (auto it = container_->begin(); it != container_->end(); ++it)
+    if (!input_.text().toStdString().empty())
     {
-        if (*it == pattern)
-        {
-            emit okPressed();
-            return;
-        }
+        *set_ = input_.text();
+        qDebug("after %s", set_->toStdString().c_str());
+        input_.clear();
+        emit okPressed();
     }
 
-    container_->push_back(pattern);
-    qDebug("add");
-    emit okPressed();
-}
-
-template<class T>RemoveMenu<T>::RemoveMenu(QString&& title, QString&& what) noexcept :
-    menu_(std::make_shared<InterfaceMenu>(title, what)) {
-    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(remove()));
-}
-
-template<class T>RemoveMenu<T>::RemoveMenu(const QString& title, const QString& what) noexcept :
-    menu_(std::make_shared<InterfaceMenu>(title, what)) {
-    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(remove()));
-}
-
-template<class T> void RemoveMenu<T>::remove()
-{
-    const T pattern(params_.first, params_.second);
-
-    for (auto it = container_->begin(); it != container_->end(); ++it)
+    else
     {
-        if (*it == pattern)
-        {
-            container_->erase(it);
-            qDebug("remove");
-            emit okPressed();
-        }
+        input_.clear();
+        MessageDialog* empty = new MessageDialog("Nothing inputted");
+        empty->exec();
+        delete empty;
+    }
+}
+
+chng::Input2::Input2(QString&& title, QString&& what1, QString&& what2, QString* set1, QString* set2) noexcept :
+    menu_(new SubMenu(title)),
+    what1_(QLabel(what1, menu_)),
+    input1_(QLineEdit(menu_)),
+    set1_(set1),
+    what2_(QLabel(what2, menu_)),
+    input2_(QLineEdit(menu_)),
+    set2_(set2)
+{
+    menu_->ok_->setGeometry(320, 100, 75, 25);
+    menu_->cancel_->setGeometry(410, 100, 75, 25);
+
+    what1_.setFont(QFont("Calibri", 12, 5));
+    input1_.setFont(QFont("Calibri Light", 15, 3, true));
+    input1_.setPlaceholderText("Input something");
+    what1_.setGeometry(10, 20, 200, 30);
+    input1_.setGeometry(150, 20, 300, 30);
+
+    what2_.setFont(QFont("Calibri", 12, 5));
+    input2_.setFont(QFont("Calibri Light", 15, 3, true));
+    input2_.setPlaceholderText("Input something");
+    what2_.setGeometry(10, 60, 200, 30);
+    input2_.setGeometry(150, 60, 300, 30);
+
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(setInput()));
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), menu_, SLOT(close()));
+    QObject::connect(menu_->cancel_, SIGNAL(pressed()), menu_, SLOT(close()));
+}
+
+chng::Input2::Input2(const QString& title, const QString& what1, const QString& what2, QString* set1, QString* set2) noexcept :
+    menu_(new SubMenu(title)),
+    what1_(QLabel(what1, menu_)),
+    input1_(QLineEdit(menu_)),
+    set1_(set1),
+    what2_(QLabel(what2, menu_)),
+    input2_(QLineEdit(menu_)),
+    set2_(set2)
+{
+    menu_->ok_->setGeometry(320, 100, 75, 25);
+    menu_->cancel_->setGeometry(410, 100, 75, 25);
+
+    what1_.setFont(QFont("Calibri", 12, 5));
+    input1_.setFont(QFont("Calibri Light", 15, 3, true));
+    input1_.setPlaceholderText("Input something");
+    what1_.setGeometry(10, 20, 200, 30);
+    input1_.setGeometry(150, 20, 300, 30);
+
+    what2_.setFont(QFont("Calibri", 12, 5));
+    input2_.setFont(QFont("Calibri Light", 15, 3, true));
+    input2_.setPlaceholderText("Input something");
+    what2_.setGeometry(10, 100, 200, 30);
+    input2_.setGeometry(150, 100, 300, 30);
+
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), this, SLOT(setInput()));
+    QObject::connect(menu_->ok_, SIGNAL(pressed()), menu_, SLOT(close()));
+    QObject::connect(menu_->cancel_, SIGNAL(pressed()), menu_, SLOT(close()));
+}
+
+void chng::Input2::setInput()
+{
+
+    if (!input1_.text().toStdString().empty() && !input2_.text().toStdString().empty())
+    {
+        *set1_ = input1_.text();
+        *set2_ = input2_.text();
+        qDebug("after %s %s", set1_->toStdString().c_str(), set2_->toStdString().c_str());
+        input1_.clear();
+        input2_.clear();
+        emit okPressed();
     }
 
-    emit okPressed();
+    else
+    {
+        input1_.clear();
+        input2_.clear();
+
+        MessageDialog* empty = new MessageDialog("Nothing inputted");
+        empty->exec();
+        delete empty;
+    }
 }

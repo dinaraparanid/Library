@@ -1,5 +1,6 @@
 #include "book.h"
 #include "reader.h"
+#include "messagedialog.h"
 
 #include <memory>
 #include <tuple>
@@ -99,9 +100,9 @@ bool booksys::BookSystem::addBook(const TheBook& theBook) noexcept
     return false;
 }
 
-bool booksys::BookSystem::addBook(QString&& title, QString&& author, QSet<QString>&& genres) noexcept
+bool booksys::BookSystem::addBook(QString&& title, QString&& author) noexcept
 {
-    const TheBook theBook(title, author, genres);
+    const TheBook theBook(title, author);
     const auto search = find(theBook);
 
     if (search == books_.end())
@@ -113,9 +114,9 @@ bool booksys::BookSystem::addBook(QString&& title, QString&& author, QSet<QStrin
     return false;
 }
 
-bool booksys::BookSystem::addBook(const QString& title, const QString& author, const QSet<QString>& genres) noexcept
+bool booksys::BookSystem::addBook(const QString& title, const QString& author) noexcept
 {
-    const TheBook theBook(title, author, genres);
+    const TheBook theBook(title, author);
     const auto search = find(theBook);
 
     if (search == books_.end())
@@ -181,8 +182,8 @@ bool booksys::BookSystem::removeBook(const QString& title, const QString& author
 
 void booksys::Book::startReading(const std::shared_ptr<read::Reader>& reader, booksys::date finishDate) noexcept
 {
-    const auto start = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    const std::tm now = *std::localtime(&start);
+    const auto start    = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    const std::tm now   = *std::localtime(&start);
 
     readers_.push_back(std::make_pair(reader,
                           std::make_pair(std::make_tuple(now.tm_mday, now.tm_mon, now.tm_year),
@@ -193,8 +194,8 @@ void booksys::Book::startReading(const std::shared_ptr<read::Reader>& reader, bo
 
 void booksys::Book::finishReading() noexcept
 {
-    const auto finish = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    const auto now = *std::localtime(&finish);
+    const auto finish   = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    const auto now      = *std::localtime(&finish);
 
     isUsing_ = false;
     readers_.back().second.second = std::make_tuple(now.tm_mday, now.tm_mon, now.tm_year);

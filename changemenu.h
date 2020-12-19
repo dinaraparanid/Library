@@ -2,7 +2,8 @@
 #define ASKMENU_H
 
 #include <memory>
-#include <any>
+
+#include "submenu.h"
 
 #include <QMenu>
 #include <QDialog>
@@ -11,82 +12,59 @@
 #include <QLineEdit>
 #include <QPushButton>
 
-class InterfaceMenu : public QDialog
-{
-    Q_OBJECT
+namespace chng {
 
-public:
-    QLabel what_;                            // Input first (name, title of book ...)
-    QLineEdit input_;
-    QPushButton* ok_;
-    QPushButton* cancel_;
+    class Input1 : public QObject
+    {
+        Q_OBJECT
 
-    InterfaceMenu(QString&&, QString&&)            noexcept;
-    InterfaceMenu(const QString&, const QString&)  noexcept;
-    ~InterfaceMenu() { delete ok_; delete cancel_; }
-};
+    public:
+        Input1(QString&&, QString&&, QString*)           noexcept;
+        Input1(const QString&, const QString&, QString*) noexcept;
+        ~Input1() { delete menu_; }
 
-class ChangeMenu : public QObject
-{
-    std::shared_ptr<InterfaceMenu> menu_;
-    std::shared_ptr<QString> changable_;
+    public slots:
+        void setInput();
+        void show()  { menu_->show(); }
+        void close() { menu_->close(); }
 
-public:
-    ChangeMenu(QString&&, QString&&)            noexcept;
-    ChangeMenu(const QString&, const QString&)  noexcept;
-    ~ChangeMenu() = default;
+    signals:
+        void okPressed();
 
-    void setChangable(std::shared_ptr<QString> changable) noexcept { changable_ = changable; }
+    private:
+        SubMenu* menu_;
+        QLabel what_;
+        QLineEdit input_;
+        QString* set_;
+    };
 
-signals:
-    void okPressed();
+    class Input2 : public QObject
+    {
+        Q_OBJECT
 
-public slots:
-    void change();
-};
+    public:
+        Input2(QString&&, QString&&, QString&&, QString*, QString*)                   noexcept;
+        Input2(const QString&, const QString&, const QString&, QString*, QString*)    noexcept;
+        ~Input2() { delete menu_; }
 
-template<class T> class AddMenu : public QObject
-{
-    std::shared_ptr<InterfaceMenu> menu_;
-    std::shared_ptr<QVector<T>> container_;
-    std::pair<QString, QString> params_;
+    public slots:
+        void setInput();
+        void show()  { menu_->show(); }
+        void exec()  { menu_->exec(); }
+        void close() { menu_->close(); }
 
-public:
-    AddMenu(QString&&, QString&&)           noexcept;
-    AddMenu(const QString&, const QString&) noexcept;
-    ~AddMenu() = default;
+    signals:
+        void okPressed();
 
-    void setParams(QString&& f, QString&& s)                 noexcept { params_ = std::make_pair(f, s); }
-    void setParams(const QString& f, const QString&& s)      noexcept { params_ = std::make_pair(f, s); }
-    void setContainer(std::shared_ptr<QVector<T>> container) noexcept { container_ = container; }
-
-signals:
-    void okPressed();
-
-public slots:
-    void add();
-};
-
-template<class T> class RemoveMenu : public QObject
-{
-    std::shared_ptr<InterfaceMenu> menu_;
-    std::shared_ptr<QVector<T>> container_;
-    std::pair<QString, QString> params_;
-
-public:
-    RemoveMenu(QString&&, QString&&)            noexcept;
-    RemoveMenu(const QString&, const QString&)  noexcept;
-    ~RemoveMenu() = default;
-
-    void setParams(QString&& f, QString&& s)                 noexcept { params_ = std::make_pair(f, s); }
-    void setParams(const QString& f, const QString&& s)      noexcept { params_ = std::make_pair(f, s); }
-    void setContainer(std::shared_ptr<QVector<T>> container) noexcept { container_ = container; }
-
-signals:
-    void okPressed();
-
-public slots:
-    void remove();
-};
+    private:
+        SubMenu* menu_;
+        QLabel what1_;
+        QLineEdit input1_;
+        QString* set1_;
+        QLabel what2_;
+        QLineEdit input2_;
+        QString* set2_;
+    };
+}
 
 #endif // ASKMENU_H

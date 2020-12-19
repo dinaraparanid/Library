@@ -13,13 +13,17 @@ SOURCES += \
     changemenu.cpp \
     main.cpp \
     mainwindow.cpp \
-    reader.cpp
+    messagedialog.cpp \
+    reader.cpp \
+    submenu.cpp
 
 HEADERS += \
     book.h \
     changemenu.h \
     mainwindow.h \
-    reader.h
+    messagedialog.h \
+    reader.h \
+    submenu.h
 
 FORMS +=
 
