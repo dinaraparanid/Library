@@ -5,7 +5,7 @@ SubMenu::SubMenu(QString&& title) noexcept :
     ok_(new QPushButton("OK", this)),
     cancel_(new QPushButton("Cancel", this))
 {
-    setGeometry(500, 500, 500, 150);
+    setGeometry(500, 500, 500, 200);
     setFixedSize(size());
     setWindowTitle(title);
 
@@ -21,7 +21,7 @@ SubMenu::SubMenu(const QString& title) noexcept :
     ok_(new QPushButton("OK", this)),
     cancel_(new QPushButton("Cancel", this))
 {
-    setGeometry(500, 500, 500, 150);
+    setGeometry(500, 500, 500, 200);
     setFixedSize(size());
     setWindowTitle(title);
 

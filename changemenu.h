@@ -26,6 +26,7 @@ namespace chng {
     public slots:
         void setInput();
         void show()  { menu_->show(); }
+        void exec()  { menu_->exec(); }
         void close() { menu_->close(); }
 
     signals:
@@ -64,6 +65,37 @@ namespace chng {
         QLabel what2_;
         QLineEdit input2_;
         QString* set2_;
+    };
+
+    class Input3 : public QObject
+    {
+        Q_OBJECT
+
+    public:
+        Input3(QString&&, QString&&, QString&&, QString&&, std::uint8_t*, std::uint8_t*, std::uint16_t*)                        noexcept;
+        Input3(const QString&, const QString&, const QString&, const QString&, std::uint8_t*, std::uint8_t*, std::uint16_t*)    noexcept;
+        ~Input3() { delete menu_; }
+
+    public slots:
+        void setInput();
+        void show()  { menu_->show(); }
+        void exec()  { menu_->exec(); }
+        void close() { menu_->close(); }
+
+    signals:
+        void okPressed();
+
+    private:
+        SubMenu* menu_;
+        QLabel what1_;
+        QLineEdit input1_;
+        std::uint8_t* set1_;
+        QLabel what2_;
+        QLineEdit input2_;
+        std::uint8_t* set2_;
+        QLabel what3_;
+        QLineEdit input3_;
+        std::uint16_t* set3_;
     };
 }
 

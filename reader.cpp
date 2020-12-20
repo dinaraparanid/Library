@@ -148,3 +148,27 @@ bool read::ReaderBase::removeReader(const QString& name, const QString& family) 
 
     return false;
 }
+
+void read::Reader::startReading(std::shared_ptr<booksys::Book> book, booksys::date end) noexcept
+{
+    books_.push_back(book);
+    book->startReading(std::make_shared<read::Reader>(*this), end);
+}
+
+QVector<std::shared_ptr<booksys::Book>>::reverse_iterator read::Reader::findBook(QString&& title, QString&& author)  noexcept
+{
+    for (auto it = books_.rbegin(); it != books_.rend(); ++it)
+        if (it->get()->title_ == title && it->get()->author_ == author)
+            return it;
+
+    return books_.rend();
+}
+
+QVector<std::shared_ptr<booksys::Book>>::reverse_iterator read::Reader::findBook(const QString& title, const QString& author)  noexcept
+{
+    for (auto it = books_.rbegin(); it != books_.rend(); ++it)
+        if (it->get()->title_ == title && it->get()->author_ == author)
+            return it;
+
+    return books_.rend();
+}

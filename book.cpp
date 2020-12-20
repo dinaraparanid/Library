@@ -9,26 +9,50 @@
 
 std::shared_ptr<booksys::BookSystem> booksys::BookSystem::instance_;
 
-booksys::Book& booksys::BookSystem::getUnused(const std::size_t ind)
+booksys::Book* booksys::BookSystem::getUnused(QString&& title, QString&& author) noexcept
 {
-    std::size_t index = 0;
-
-    for (auto& the_book : books_)
+    for (auto theBook : books_)
     {
-        for (auto& book : the_book.books_)
+        if (theBook.title_ == title && theBook.author_ == author)
         {
-            if (!book.isUse())
-            {
-                if (index == ind)
-                    return book;
+            for (auto book : theBook.books_)
+                if (!book.isUse())
+                    return &book;
 
-                index++;
-                break;
-            }
+            auto* fail = new MessageDialog("All book are in use");
+            fail->exec();
+            delete fail;
+            return nullptr;
         }
     }
 
-    throw std::logic_error("The book is not found");
+    auto* fail = new MessageDialog("All book are in use");
+    fail->exec();
+    delete fail;
+    return nullptr;
+}
+
+booksys::Book* booksys::BookSystem::getUnused(const QString& title, const QString& author) noexcept
+{
+    for (auto theBook : books_)
+    {
+        if (theBook.title_ == title && theBook.author_ == author)
+        {
+            for (auto book : theBook.books_)
+                if (!book.isUse())
+                    return &book;
+
+            auto* fail = new MessageDialog("All book are in use");
+            fail->exec();
+            delete fail;
+            return nullptr;
+        }
+    }
+
+    auto* fail = new MessageDialog("All book are in use");
+    fail->exec();
+    delete fail;
+    return nullptr;
 }
 
 std::shared_ptr<booksys::BookSystem> booksys::BookSystem::getInstance() noexcept
@@ -108,6 +132,7 @@ bool booksys::BookSystem::addBook(QString&& title, QString&& author) noexcept
     if (search == books_.end())
     {
         books_.push_back(theBook);
+        books_.back().books_.push_back(Book(title, author));
         return true;
     }
 
@@ -122,6 +147,7 @@ bool booksys::BookSystem::addBook(const QString& title, const QString& author) n
     if (search == books_.end())
     {
         books_.push_back(theBook);
+        books_.back().books_.push_back(Book(title, author));
         return true;
     }
 
@@ -180,10 +206,10 @@ bool booksys::BookSystem::removeBook(const QString& title, const QString& author
     return false;
 }
 
-void booksys::Book::startReading(const std::shared_ptr<read::Reader>& reader, booksys::date finishDate) noexcept
+void booksys::Book::startReading(const std::shared_ptr<read::Reader> reader, booksys::date finishDate) noexcept
 {
     const auto start    = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    const std::tm now   = *std::localtime(&start);
+    const auto now      = *std::localtime(&start);
 
     readers_.push_back(std::make_pair(reader,
                           std::make_pair(std::make_tuple(now.tm_mday, now.tm_mon, now.tm_year),
@@ -192,11 +218,52 @@ void booksys::Book::startReading(const std::shared_ptr<read::Reader>& reader, bo
     isUsing_ = true;
 }
 
-void booksys::Book::finishReading() noexcept
+void booksys::Book::finishReading(const std::shared_ptr<read::Reader> reader) noexcept
 {
     const auto finish   = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     const auto now      = *std::localtime(&finish);
 
-    isUsing_ = false;
-    readers_.back().second.second = std::make_tuple(now.tm_mday, now.tm_mon, now.tm_year);
+    if (readers_.back().first != reader)
+    {
+        auto* fail = new MessageDialog("Wrong reader");
+        fail->exec();
+        delete fail;
+    }
+
+    else
+    {
+        isUsing_ = false;
+
+        if (std::get<2>(readers_.back().second.second) > now.tm_year)
+        {
+            auto* late = new MessageDialog("Reader is late");
+            late->exec();
+            delete late;
+        }
+
+        else if (std::get<1>(readers_.back().second.second) > now.tm_mon)
+        {
+            auto* late = new MessageDialog("Reader is late");
+            late->exec();
+            delete late;
+        }
+
+        else if (std::get<0>(readers_.back().second.second) > now.tm_mday)
+        {
+            auto* late = new MessageDialog("Reader is late");
+            late->exec();
+            delete late;
+        }
+
+        readers_.back().second.second = std::make_tuple(now.tm_mday, now.tm_mon, now.tm_year);
+    }
+}
+
+QVector<booksys::Book>::iterator booksys::TheBook::getUnused() noexcept
+{
+    for (auto it = books_.begin(); it != books_.end(); ++it)
+        if (!it->isUse())
+            return it;
+
+    return books_.begin();
 }

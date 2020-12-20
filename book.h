@@ -30,7 +30,7 @@ namespace booksys
 
         QString title_;
         QString author_;
-         bool isUsing_;                                                                      // using status
+        bool isUsing_;                                                                       // using status
         QVector<std::pair<std::shared_ptr<read::Reader>, std::pair<date, date>>> readers_;   // reader / dates
 
     public:
@@ -40,17 +40,20 @@ namespace booksys
             title_(title), author_(author) { isUsing_ = false; }
         ~Book() = default;
 
-        void changeTitle (QString&& title)       noexcept { title_  = title; }
-        void changeTitle (const QString& title)  noexcept { title_  = title; }
-        void changeAuthor(QString&& author)      noexcept { author_ = author; }
-        void changeAuthor(const QString& author) noexcept { author_ = author; }
+        void changeTitle (QString&& title)          noexcept { title_  = title; }
+        void changeTitle (const QString& title)     noexcept { title_  = title; }
+        void changeAuthor(QString&& author)         noexcept { author_ = author; }
+        void changeAuthor(const QString& author)    noexcept { author_ = author; }
 
-        void startReading(const std::shared_ptr<read::Reader>&, date) noexcept;
-        void finishReading()										  noexcept;
+        void startReading(const std::shared_ptr<read::Reader>, date)    noexcept;
+        void finishReading(const std::shared_ptr<read::Reader>)         noexcept;
 
-        [[nodiscard]] bool isUse()		  const noexcept { return isUsing_; }
-        [[nodiscard]] QString getTitle()  const noexcept { return title_; }
-        [[nodiscard]] QString getAuthor() const noexcept { return author_; }
+        [[nodiscard]] bool isUse()          const noexcept { return isUsing_; }
+        [[nodiscard]] QString getTitle()    const noexcept { return title_; }
+        [[nodiscard]] QString getAuthor()   const noexcept { return author_; }
+
+        [[nodiscard]] QVector<std::pair<std::shared_ptr<read::Reader>,
+        std::pair<date, date>>>::const_reverse_iterator getLastReader()  const noexcept { return readers_.rbegin(); }
     };
 
     class TheBook // interface
@@ -66,19 +69,21 @@ namespace booksys
             title_(title), author_(author) {}
         TheBook(const QString& title, const QString& author) noexcept :
             title_(title), author_(author) {}
-        bool operator== (const TheBook& theBook) { return title_ == theBook.title_ && author_ == theBook.author_; }
-        bool operator!= (const TheBook& theBook) { return !(*this == theBook); }
+        [[nodiscard]] bool operator== (const TheBook& theBook) noexcept { return title_ == theBook.title_ && author_ == theBook.author_; }
+        [[nodiscard]] bool operator!= (const TheBook& theBook) noexcept { return !(*this == theBook); }
         ~TheBook() = default;
 
-        [[nodiscard]] QString getTitle()        const noexcept { return title_; }
-        [[nodiscard]] QString getAuthor()       const noexcept { return author_; }
+        [[nodiscard]] QString getTitle()              const noexcept { return title_; }
+        [[nodiscard]] QString getAuthor()             const noexcept { return author_; }
+        [[nodiscard]] QVector<Book>::const_iterator cend()  noexcept { return books_.cend(); }
+        [[nodiscard]] QVector<Book>::iterator getUnused()   noexcept;
 
-        void changeTitle(QString&& title)        noexcept { title_  = title; }
-        void changeTitle(const QString& title)   noexcept { title_  = title; }
-        void changeAuthor(QString&& author)      noexcept { author_ = author; }
-        void changeAuthor(const QString& author) noexcept { author_ = author; }
-        void removeBook(const std::size_t ind)   noexcept { books_.erase(books_.begin() + ind); }
-        void addBook()                           noexcept { books_.push_back(Book(title_, author_)); }
+        void changeTitle(QString&& title)                   noexcept { title_  = title; }
+        void changeTitle(const QString& title)              noexcept { title_  = title; }
+        void changeAuthor(QString&& author)                 noexcept { author_ = author; }
+        void changeAuthor(const QString& author)            noexcept { author_ = author; }
+        void removeBook(const std::size_t ind)              noexcept { books_.erase(books_.begin() + ind); }
+        void addBook()                                      noexcept { books_.push_back(Book(title_, author_)); }
     };
 
     class BookSystem
@@ -88,32 +93,33 @@ namespace booksys
         QVector<TheBook> books_;
         static std::shared_ptr<BookSystem> instance_;
 
-        Book& getUnused(std::size_t ind);
-
     public:
-        BookSystem() = default;
-        BookSystem(const BookSystem&) = delete;
-        BookSystem(BookSystem&&) = delete;
-        ~BookSystem() = default;
-        BookSystem& operator=(const BookSystem&) = delete;
-        BookSystem& operator=(BookSystem&&) = delete;
+        BookSystem()                                = default;
+        BookSystem(const BookSystem&)               = delete;
+        BookSystem(BookSystem&&)                    = delete;
+        ~BookSystem()                               = default;
+        BookSystem& operator=(const BookSystem&)    = delete;
+        BookSystem& operator=(BookSystem&&)         = delete;
 
-        bool addBook(TheBook&&)                                            noexcept;
-        bool addBook(const TheBook&)                                       noexcept;
-        bool addBook(QString&&, QString&&)                                 noexcept;
-        bool addBook(const QString&, const QString&)                       noexcept;
+        [[nodiscard]] bool addBook(TheBook&&)                               noexcept;
+        [[nodiscard]] bool addBook(const TheBook&)                          noexcept;
+        [[nodiscard]] bool addBook(QString&&, QString&&)                    noexcept;
+        [[nodiscard]] bool addBook(const QString&, const QString&)          noexcept;
 
-        QVector<TheBook>::iterator find(TheBook&&)                         noexcept;
-        QVector<TheBook>::iterator find(const TheBook&)                    noexcept;
-        QVector<TheBook>::iterator find(QString&&, QString&&)              noexcept;
-        QVector<TheBook>::iterator find(const QString&, const QString&)    noexcept;
+        [[nodiscard]] QVector<TheBook>::iterator find(TheBook&&)                          noexcept;
+        [[nodiscard]] QVector<TheBook>::iterator find(const TheBook&)                     noexcept;
+        [[nodiscard]] QVector<TheBook>::iterator find(QString&&, QString&&)               noexcept;
+        [[nodiscard]] QVector<TheBook>::iterator find(const QString&, const QString&)     noexcept;
+        [[nodiscard]] QVector<TheBook>::const_iterator cend()                       const noexcept { return books_.cend(); }
 
-        bool removeBook(TheBook&&)                                         noexcept;
-        bool removeBook(const TheBook&)                                    noexcept;
-        bool removeBook(QString&&, QString&&)                              noexcept;
-        bool removeBook(const QString&, const QString&)                    noexcept;
+        [[nodiscard]] bool removeBook(TheBook&&)                                          noexcept;
+        [[nodiscard]] bool removeBook(const TheBook&)                                     noexcept;
+        [[nodiscard]] bool removeBook(QString&&, QString&&)                               noexcept;
+        [[nodiscard]] bool removeBook(const QString&, const QString&)                     noexcept;
 
-        static std::shared_ptr<BookSystem> getInstance() noexcept;
+        [[nodiscard]]static std::shared_ptr<BookSystem> getInstance()       noexcept;
+        [[nodiscard]] Book* getUnused(QString&&, QString&&)                 noexcept;
+        [[nodiscard]] Book* getUnused(const QString&, const QString&)       noexcept;
     };
 }
 
