@@ -1,3 +1,9 @@
+#include <debug.h>
+
+#ifdef RELEASE
+#undef DEBUG
+#endif
+
 #include "book.h"
 #include "reader.h"
 #include "messagedialog.h"
@@ -9,15 +15,15 @@
 
 std::shared_ptr<booksys::BookSystem> booksys::BookSystem::instance_;
 
-booksys::Book* booksys::BookSystem::getUnused(QString&& title, QString&& author) noexcept
+std::shared_ptr<booksys::Book> booksys::BookSystem::getUnused(QString&& title, QString&& author) noexcept
 {
     for (auto theBook : books_)
     {
-        if (theBook.title_ == title && theBook.author_ == author)
+        if (theBook->title_ == title && theBook->author_ == author)
         {
-            for (auto book : theBook.books_)
-                if (!book.isUse())
-                    return &book;
+            for (auto book : theBook->books_)
+                if (!book->isUse())
+                    return book;
 
             auto* fail = new MessageDialog("All book are in use");
             fail->exec();
@@ -32,15 +38,15 @@ booksys::Book* booksys::BookSystem::getUnused(QString&& title, QString&& author)
     return nullptr;
 }
 
-booksys::Book* booksys::BookSystem::getUnused(const QString& title, const QString& author) noexcept
+std::shared_ptr<booksys::Book> booksys::BookSystem::getUnused(const QString& title, const QString& author) noexcept
 {
     for (auto theBook : books_)
     {
-        if (theBook.title_ == title && theBook.author_ == author)
+        if (theBook->title_ == title && theBook->author_ == author)
         {
-            for (auto book : theBook.books_)
-                if (!book.isUse())
-                    return &book;
+            for (auto book : theBook->books_)
+                if (!book->isUse())
+                    return book;
 
             auto* fail = new MessageDialog("All book are in use");
             fail->exec();
@@ -62,56 +68,34 @@ std::shared_ptr<booksys::BookSystem> booksys::BookSystem::getInstance() noexcept
     return instance_;
 }
 
-QVector<booksys::TheBook>::iterator booksys::BookSystem::find(TheBook&& theBook) noexcept
+QVector<std::shared_ptr<booksys::TheBook>>::iterator booksys::BookSystem::find(std::shared_ptr<booksys::TheBook> theBook) noexcept
 {
     for (auto it = books_.begin(); it != books_.end(); ++it)
-        if (*it == theBook)
+        if (**it == *theBook)
             return it;
 
     return books_.end();
 }
 
-QVector<booksys::TheBook>::iterator booksys::BookSystem::find(const TheBook& theBook) noexcept
+QVector<std::shared_ptr<booksys::TheBook>>::iterator booksys::BookSystem::find(QString&& title, QString&& author) noexcept
 {
     for (auto it = books_.begin(); it != books_.end(); ++it)
-        if (*it == theBook)
+        if (it->get()->title_ == title && it->get()->author_ == author)
             return it;
 
     return books_.end();
 }
 
-QVector<booksys::TheBook>::iterator booksys::BookSystem::find(QString&& title, QString&& author) noexcept
+QVector<std::shared_ptr<booksys::TheBook>>::iterator booksys::BookSystem::find(const QString& title, const QString& author) noexcept
 {
     for (auto it = books_.begin(); it != books_.end(); ++it)
-        if (it->title_ == title && it->author_ == author)
+        if (it->get()->title_ == title && it->get()->author_ == author)
             return it;
 
     return books_.end();
 }
 
-QVector<booksys::TheBook>::iterator booksys::BookSystem::find(const QString& title, const QString& author) noexcept
-{
-    for (auto it = books_.begin(); it != books_.end(); ++it)
-        if (it->title_ == title && it->author_ == author)
-            return it;
-
-    return books_.end();
-}
-
-bool booksys::BookSystem::addBook(TheBook&& theBook) noexcept
-{
-    const auto search = find(theBook);
-
-    if (search == books_.end())
-    {
-        books_.push_back(theBook);
-        return true;
-    }
-
-    return false;
-}
-
-bool booksys::BookSystem::addBook(const TheBook& theBook) noexcept
+bool booksys::BookSystem::addBook(std::shared_ptr<booksys::TheBook> theBook) noexcept
 {
     const auto search = find(theBook);
 
@@ -126,13 +110,12 @@ bool booksys::BookSystem::addBook(const TheBook& theBook) noexcept
 
 bool booksys::BookSystem::addBook(QString&& title, QString&& author) noexcept
 {
-    const TheBook theBook(title, author);
-    const auto search = find(theBook);
+    const auto search = find(title, author);
 
     if (search == books_.end())
     {
-        books_.push_back(theBook);
-        books_.back().books_.push_back(Book(title, author));
+        books_.push_back(std::make_shared<TheBook>(title, author));
+        books_.back()->books_.push_back(std::make_shared<Book>(title, author));
         return true;
     }
 
@@ -141,33 +124,19 @@ bool booksys::BookSystem::addBook(QString&& title, QString&& author) noexcept
 
 bool booksys::BookSystem::addBook(const QString& title, const QString& author) noexcept
 {
-    const TheBook theBook(title, author);
-    const auto search = find(theBook);
+    const auto search = find(title, author);
 
     if (search == books_.end())
     {
-        books_.push_back(theBook);
-        books_.back().books_.push_back(Book(title, author));
+        books_.push_back(std::make_shared<TheBook>(title, author));
+        books_.back()->books_.push_back(std::make_shared<Book>(title, author));
         return true;
     }
 
     return false;
 }
 
-bool booksys::BookSystem::removeBook(TheBook&& theBook) noexcept
-{
-    const auto search = find(theBook);
-
-    if (search != books_.end())
-    {
-        books_.erase(search);
-        return true;
-    }
-
-    return false;
-}
-
-bool booksys::BookSystem::removeBook(const TheBook& theBook) noexcept
+bool booksys::BookSystem::removeBook(std::shared_ptr<booksys::TheBook> theBook) noexcept
 {
     const auto search = find(theBook);
 
@@ -206,24 +175,31 @@ bool booksys::BookSystem::removeBook(const QString& title, const QString& author
     return false;
 }
 
-void booksys::Book::startReading(const std::shared_ptr<read::Reader> reader, booksys::date finishDate) noexcept
+void booksys::Book::startReading(std::shared_ptr<read::Reader> reader, booksys::date finishDate) noexcept
 {
+    #ifdef DEBUG
+    qDebug("Reader pointer %p (start reading from Book)", reader.get());
+    #endif
+
     const auto start    = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     const auto now      = *std::localtime(&start);
 
     readers_.push_back(std::make_pair(reader,
-                          std::make_pair(std::make_tuple(now.tm_mday, now.tm_mon, now.tm_year),
+                          std::make_pair(std::make_tuple(now.tm_mday, now.tm_mon + 1, now.tm_year + 1900),
                                          finishDate)));
+    #ifdef DEBUG
+    qDebug("Reader pointer after add to readers %p (start reading from Book)", readers_.back().first.get());
+    #endif
 
     isUsing_ = true;
 }
 
-void booksys::Book::finishReading(const std::shared_ptr<read::Reader> reader) noexcept
+void booksys::Book::finishReading(std::shared_ptr<read::Reader> reader) noexcept
 {
     const auto finish   = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     const auto now      = *std::localtime(&finish);
 
-    if (readers_.back().first != reader)
+    if (*readers_.back().first != *reader)
     {
         auto* fail = new MessageDialog("Wrong reader");
         fail->exec();
@@ -234,14 +210,14 @@ void booksys::Book::finishReading(const std::shared_ptr<read::Reader> reader) no
     {
         isUsing_ = false;
 
-        if (std::get<2>(readers_.back().second.second) > now.tm_year)
+        if (std::get<2>(readers_.back().second.second) > now.tm_year + 1900)
         {
             auto* late = new MessageDialog("Reader is late");
             late->exec();
             delete late;
         }
 
-        else if (std::get<1>(readers_.back().second.second) > now.tm_mon)
+        else if (std::get<1>(readers_.back().second.second) > now.tm_mon + 1)
         {
             auto* late = new MessageDialog("Reader is late");
             late->exec();
@@ -255,15 +231,43 @@ void booksys::Book::finishReading(const std::shared_ptr<read::Reader> reader) no
             delete late;
         }
 
-        readers_.back().second.second = std::make_tuple(now.tm_mday, now.tm_mon, now.tm_year);
+        readers_.back().second.second = std::make_tuple(now.tm_mday, now.tm_mon + 1, now.tm_year + 1900);
     }
 }
 
-QVector<booksys::Book>::iterator booksys::TheBook::getUnused() noexcept
+QVector<std::shared_ptr<booksys::Book>>::iterator booksys::TheBook::getUnused() noexcept
 {
     for (auto it = books_.begin(); it != books_.end(); ++it)
-        if (!it->isUse())
+        if (!it->get()->isUse())
             return it;
 
     return books_.begin();
+}
+
+void booksys::TheBook::changeTitle(QString&& title) noexcept
+{
+    title_ = title;
+    std::for_each(books_.begin(), books_.end(),
+                  [&title] (std::shared_ptr<booksys::Book> b) { b->changeTitle(title); });
+}
+
+void booksys::TheBook::changeTitle(const QString& title) noexcept
+{
+    title_ = title;
+    std::for_each(books_.begin(), books_.end(),
+                  [&title] (std::shared_ptr<booksys::Book> b) { b->changeTitle(title); });
+}
+
+void booksys::TheBook::changeAuthor(QString&& author) noexcept
+{
+    author_ = author;
+    std::for_each(books_.begin(), books_.end(),
+                  [&author] (std::shared_ptr<booksys::Book> b) { b->changeAuthor(author); });
+}
+
+void booksys::TheBook::changeAuthor(const QString& author) noexcept
+{
+    author_ = author;
+    std::for_each(books_.begin(), books_.end(),
+                  [&author] (std::shared_ptr<booksys::Book> b) { b->changeAuthor(author); });
 }

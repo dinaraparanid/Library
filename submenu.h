@@ -1,6 +1,12 @@
 #ifndef SUBMENU_H
 #define SUBMENU_H
 
+#include <debug.h>
+
+#ifdef RELEASE
+#undef DEBUG
+#endif
+
 #include <QDialog>
 #include <QLabel>
 #include <QPushButton>

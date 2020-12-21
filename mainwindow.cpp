@@ -1,3 +1,9 @@
+#include <debug.h>
+
+#ifdef RELEASE
+#undef DEBUG
+#endif
+
 #include <mainwindow.h>
 #include <changemenu.h>
 #include <messagedialog.h>
@@ -192,7 +198,10 @@ void MainWindow::addBook(QString&& title, QString&& author) noexcept
 {
     if (bookSys->addBook(title, author))
     {
+        #ifdef DEBUG
         qDebug("Add the book %s %s", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* succes = new MessageDialog("Succesfully added");
         succes->exec();
         delete succes;
@@ -200,7 +209,10 @@ void MainWindow::addBook(QString&& title, QString&& author) noexcept
 
     else
     {
+        #ifdef DEBUG
         qDebug("The book %s %s is not added (found)", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("The book is already exists");
         fail->exec();
         delete fail;
@@ -213,7 +225,10 @@ void MainWindow::addBook(const QString& title, const QString& author) noexcept
 {
     if (bookSys->addBook(title, author))
     {
+        #ifdef DEBUG
         qDebug("Add the book %s %s", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* succes = new MessageDialog("Succesfully added");
         succes->exec();
         delete succes;
@@ -221,7 +236,10 @@ void MainWindow::addBook(const QString& title, const QString& author) noexcept
 
     else
     {
+        #ifdef DEBUG
         qDebug("The book %s %s is not added (found)", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("The book is already exists");
         fail->exec();
         delete fail;
@@ -234,7 +252,10 @@ void MainWindow::removeBook(QString&& title, QString&& author) noexcept
 {
     if (bookSys->removeBook(title, author))
     {
+        #ifdef DEBUG
         qDebug("Remove the book %s %s", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* succes = new MessageDialog("Succesfully removed");
         succes->exec();
         delete succes;
@@ -242,7 +263,10 @@ void MainWindow::removeBook(QString&& title, QString&& author) noexcept
 
     else
     {
+        #ifdef DEBUG
         qDebug("The book %s %s is not removed (not found)", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("The book is not found");
         fail->exec();
         delete fail;
@@ -255,7 +279,10 @@ void MainWindow::removeBook(const QString& title, const QString& author) noexcep
 {
     if (bookSys->removeBook(title, author))
     {
+        #ifdef DEBUG
         qDebug("Remove the book %s %s", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* succes = new MessageDialog("Succesfully removed");
         succes->exec();
         delete succes;
@@ -263,7 +290,10 @@ void MainWindow::removeBook(const QString& title, const QString& author) noexcep
 
     else
     {
+        #ifdef DEBUG
         qDebug("The book %s %s is not removed (not found)", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("The book is not found");
         fail->exec();
         delete fail;
@@ -276,12 +306,17 @@ void MainWindow::findBook(QString&& title, QString&& author) noexcept
 {
     if (bookSys->find(title, author) != bookSys->cend())
     {
+        #ifdef DEBUG
         qDebug("The book %s %s is found", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
     }
 
     else
     {
+        #ifdef DEBUG
         qDebug("The book %s %s is not found", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("The book is not found");
         fail->exec();
         delete fail;
@@ -294,12 +329,17 @@ void MainWindow::findBook(const QString& title, const QString& author) noexcept
 {
     if (bookSys->find(title, author) != bookSys->cend())
     {
+        #ifdef DEBUG
         qDebug("The book %s %s is found", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
     }
 
     else
     {
+        #ifdef DEBUG
         qDebug("The book %s %s is not found", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("The book is not found");
         fail->exec();
         delete fail;
@@ -312,7 +352,10 @@ void MainWindow::addReader(QString&& name, QString&& family) noexcept
 {
     if (readSys->addReader(name, family))
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is added", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* succes = new MessageDialog("Succesfully added");
         succes->exec();
         delete succes;
@@ -320,7 +363,10 @@ void MainWindow::addReader(QString&& name, QString&& family) noexcept
 
     else
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is not added (found)", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is already exists");
         fail->exec();
         delete fail;
@@ -333,7 +379,10 @@ void MainWindow::addReader(const QString& name, const QString& family) noexcept
 {
     if (readSys->addReader(name, family))
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is added", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* succes = new MessageDialog("Succesfully added");
         succes->exec();
         delete succes;
@@ -341,7 +390,10 @@ void MainWindow::addReader(const QString& name, const QString& family) noexcept
 
     else
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is not added (found)", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is already exists");
         fail->exec();
         delete fail;
@@ -354,7 +406,10 @@ void MainWindow::removeReader(QString&& name, QString&& family) noexcept
 {
     if (readSys->removeReader(name, family))
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is removed", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* succes = new MessageDialog("Succesfully removed");
         succes->exec();
         delete succes;
@@ -362,7 +417,10 @@ void MainWindow::removeReader(QString&& name, QString&& family) noexcept
 
     else
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is not removed (not fund)", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is not found");
         fail->exec();
         delete fail;
@@ -375,7 +433,10 @@ void MainWindow::removeReader(const QString& name, const QString& family) noexce
 {
     if (readSys->removeReader(name, family))
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is removed", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* succes = new MessageDialog("Succesfully removed");
         succes->exec();
         delete succes;
@@ -383,7 +444,10 @@ void MainWindow::removeReader(const QString& name, const QString& family) noexce
 
     else
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is not removed (not found)", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is not found");
         fail->exec();
         delete fail;
@@ -396,12 +460,17 @@ void MainWindow::findReader(QString&& name, QString&& family) noexcept
 {
     if (readSys->find(name, family) != readSys->cend())
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is found", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
     }
 
     else
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is not found", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is not found");
         fail->exec();
         delete fail;
@@ -414,12 +483,17 @@ void MainWindow::findReader(const QString& name, const QString& family) noexcept
 {
     if (readSys->find(name, family) != readSys->cend())
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is added", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
     }
 
     else
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is not found", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is not found");
         fail->exec();
         delete fail;
@@ -430,7 +504,10 @@ void MainWindow::findReader(const QString& name, const QString& family) noexcept
 
 void MainWindow::getHelp() noexcept
 {
+    #ifdef DEBUG
     qDebug("HELP");
+    #endif
+
     emit pressedHelp();
 }
 
@@ -440,7 +517,10 @@ void MainWindow::MainWindow::giveBookToReader(QString&& name, QString&& family, 
 
     if (guy == readSys->cend())
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is not found (giveBook)", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is not found");
         fail->exec();
         delete fail;
@@ -452,11 +532,14 @@ void MainWindow::MainWindow::giveBookToReader(QString&& name, QString&& family, 
 
         if (theBook != bookSys->cend())
         {
-            const auto book = theBook->getUnused();
+            const auto book = theBook->get()->getUnused();
 
-            if (book == theBook->cend())
+            if (book == theBook->get()->cend())
             {
+                #ifdef DEBUG
                 qDebug("All Books %s %s are given", title.toStdString().c_str(), author.toStdString().c_str());
+                #endif
+
                 auto* noFree = new MessageDialog("All Book are given");
                 noFree->exec();
                 delete noFree;
@@ -464,8 +547,13 @@ void MainWindow::MainWindow::giveBookToReader(QString&& name, QString&& family, 
 
             else
             {
-                qDebug("Book %s %s is given to Reader %s %s", title.toStdString().c_str(), author.toStdString().c_str(), name.toStdString().c_str(), family.toStdString().c_str());
-                guy->startReading(std::make_shared<booksys::Book>(*book), end);
+                #ifdef DEBUG
+                qDebug("Book %s %s is given to Reader %s %s",
+                       title.toStdString().c_str(), author.toStdString().c_str(), name.toStdString().c_str(), family.toStdString().c_str());
+                #endif
+
+                guy->get()->startReading(*book);
+                book->get()->startReading(*guy, end);
                 auto* start = new MessageDialog("Book is given");
                 start->exec();
                 delete start;
@@ -474,7 +562,10 @@ void MainWindow::MainWindow::giveBookToReader(QString&& name, QString&& family, 
 
         else
         {
+            #ifdef DEBUG
             qDebug("The Book %s %s is not found (giveBook)", title.toStdString().c_str(), author.toStdString().c_str());
+            #endif
+
             auto* fail = new MessageDialog("Book is not found");
             fail->exec();
             delete fail;
@@ -490,7 +581,10 @@ void MainWindow::MainWindow::giveBookToReader(const QString& name, const QString
 
     if (guy == readSys->cend())
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is not found (giveBook)", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is not found");
         fail->exec();
         delete fail;
@@ -502,11 +596,14 @@ void MainWindow::MainWindow::giveBookToReader(const QString& name, const QString
 
         if (theBook != bookSys->cend())
         {
-            const auto book = theBook->getUnused();
+            const auto book = theBook->get()->getUnused();
 
-            if (book == theBook->cend())
+            if (book == theBook->get()->cend())
             {
+                #ifdef DEBUG
                 qDebug("All Books %s %s are given", title.toStdString().c_str(), author.toStdString().c_str());
+                #endif
+
                 auto* noFree = new MessageDialog("All Book are given");
                 noFree->exec();
                 delete noFree;
@@ -514,8 +611,13 @@ void MainWindow::MainWindow::giveBookToReader(const QString& name, const QString
 
             else
             {
-                qDebug("Book %s %s is given to Reader %s %s", title.toStdString().c_str(), author.toStdString().c_str(), name.toStdString().c_str(), family.toStdString().c_str());
-                guy->startReading(std::make_shared<booksys::Book>(*book), end);
+                #ifdef DEBUG
+                qDebug("Book %s %s is given to Reader %s %s",
+                       title.toStdString().c_str(), author.toStdString().c_str(), name.toStdString().c_str(), family.toStdString().c_str());
+                #endif
+
+                guy->get()->startReading(*book);
+                book->get()->startReading(*guy, end);
                 auto* start = new MessageDialog("Book is given");
                 start->exec();
                 delete start;
@@ -524,7 +626,10 @@ void MainWindow::MainWindow::giveBookToReader(const QString& name, const QString
 
         else
         {
+            #ifdef DEBUG
             qDebug("The Book %s %s is not found (giveBook)", title.toStdString().c_str(), author.toStdString().c_str());
+            #endif
+
             auto* fail = new MessageDialog("Book is not found");
             fail->exec();
             delete fail;
@@ -540,7 +645,11 @@ void MainWindow::MainWindow::getBookFromReader(QString&& name, QString&& family,
 
     if (guy == readSys->cend())
     {
-        qDebug("Reader %s %s is not found (getBook)", name.toStdString().c_str(), family.toStdString().c_str());
+        #ifdef DEBUG
+        qDebug("Reader %s %s is not found (getBook)",
+               guy->get()->getName().toStdString().c_str(), guy->get()->getFamily().toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is not found");
         fail->exec();
         delete fail;
@@ -552,11 +661,15 @@ void MainWindow::MainWindow::getBookFromReader(QString&& name, QString&& family,
 
         if (book != bookSys->cend())
         {
-            const auto search = guy->findBook(title, author);
+            const auto search = guy->get()->findBook(title, author);
 
-            if (search == guy->crend())
+            if (search == guy->get()->crend())
             {
-                qDebug("The Book %s %s is not found (getBook)", title.toStdString().c_str(), author.toStdString().c_str());
+                #ifdef DEBUG
+                qDebug("S %p %p R", search->get(), book->get());
+                qDebug("Book %s %s is not found1 (getBook)", title.toStdString().c_str(), author.toStdString().c_str());
+                #endif
+
                 auto* notFound = new MessageDialog("Book is not found");
                 notFound->exec();
                 delete notFound;
@@ -566,7 +679,10 @@ void MainWindow::MainWindow::getBookFromReader(QString&& name, QString&& family,
             {
                 if (!search->get()->isUse())
                 {
+                    #ifdef DEBUG
                     qDebug("Book %s %s is not used (getBook)", title.toStdString().c_str(), author.toStdString().c_str());
+                    #endif
+
                     auto* notUsed = new MessageDialog("The book is not used");
                     notUsed->exec();
                     delete notUsed;
@@ -578,9 +694,14 @@ void MainWindow::MainWindow::getBookFromReader(QString&& name, QString&& family,
 
                     if (check->getName() != name || check->getFamily() != family)
                     {
+                        #ifdef DEBUG
                         qDebug("(Searchable Reader) %s %s != %s %s (Real Reader)",
                                name.toStdString().c_str(), family.toStdString().c_str(),
                                check->getName().toStdString().c_str(), check->getFamily().toStdString().c_str());
+
+                        qDebug("S %p %p R", check.get(), guy->get());
+                        #endif
+
                         auto* notHim = new MessageDialog("Wrong reader");
                         notHim->exec();
                         delete notHim;
@@ -588,7 +709,12 @@ void MainWindow::MainWindow::getBookFromReader(QString&& name, QString&& family,
 
                     else
                     {
-                        qDebug("Book %s %s is return by Reader %s %s", title.toStdString().c_str(), author.toStdString().c_str(), name.toStdString().c_str(), family.toStdString().c_str());
+                        #ifdef DEBUG
+                        qDebug("Returned S %p %p R", check.get(), guy->get());
+                        qDebug("Book %s %s is return by Reader %s %s",
+                               title.toStdString().c_str(), author.toStdString().c_str(), name.toStdString().c_str(), family.toStdString().c_str());
+                        #endif
+
                         search->get()->finishReading(check);
                         auto* finish = new MessageDialog("Book is returned");
                         finish->exec();
@@ -600,7 +726,10 @@ void MainWindow::MainWindow::getBookFromReader(QString&& name, QString&& family,
 
         else
         {
-            qDebug("Book %s %s is not found (giveBook)", title.toStdString().c_str(), author.toStdString().c_str());
+            #ifdef DEBUG
+            qDebug("Book %s %s is not found2 (giveBook)", title.toStdString().c_str(), author.toStdString().c_str());
+            #endif
+
             auto* fail = new MessageDialog("Book is not found");
             fail->exec();
             delete fail;
@@ -616,7 +745,11 @@ void MainWindow::MainWindow::getBookFromReader(const QString& name, const QStrin
 
     if (guy == readSys->cend())
     {
-        qDebug("The Book %s %s is not found (getBook)", title.toStdString().c_str(), author.toStdString().c_str());
+        #ifdef DEBUG
+        qDebug("Reader %s %s is not found (getBook)",
+               guy->get()->getName().toStdString().c_str(), guy->get()->getFamily().toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is not found");
         fail->exec();
         delete fail;
@@ -628,12 +761,16 @@ void MainWindow::MainWindow::getBookFromReader(const QString& name, const QStrin
 
         if (book != bookSys->cend())
         {
-            const auto search = guy->findBook(title, author);
+            const auto search = guy->get()->findBook(title, author);
 
-            if (search == guy->crend())
+            if (search == guy->get()->crend())
             {
-                qDebug("The Book %s %s is not found (getBook)", title.toStdString().c_str(), author.toStdString().c_str());
-                auto* notFound = new MessageDialog("Reader is not found");
+                #ifdef DEBUG
+                qDebug("S %p %p R", search->get(), book->get());
+                qDebug("Book %s %s is not found1 (getBook)", title.toStdString().c_str(), author.toStdString().c_str());
+                #endif
+
+                auto* notFound = new MessageDialog("Book is not found");
                 notFound->exec();
                 delete notFound;
             }
@@ -642,7 +779,10 @@ void MainWindow::MainWindow::getBookFromReader(const QString& name, const QStrin
             {
                 if (!search->get()->isUse())
                 {
+                    #ifdef DEBUG
                     qDebug("Book %s %s is not used (getBook)", title.toStdString().c_str(), author.toStdString().c_str());
+                    #endif
+
                     auto* notUsed = new MessageDialog("The book is not used");
                     notUsed->exec();
                     delete notUsed;
@@ -654,9 +794,14 @@ void MainWindow::MainWindow::getBookFromReader(const QString& name, const QStrin
 
                     if (check->getName() != name || check->getFamily() != family)
                     {
+                        #ifdef DEBUG
                         qDebug("(Searchable Reader) %s %s != %s %s (Real Reader)",
                                name.toStdString().c_str(), family.toStdString().c_str(),
                                check->getName().toStdString().c_str(), check->getFamily().toStdString().c_str());
+
+                        qDebug("S %p %p R", check.get(), guy->get());
+                        #endif
+
                         auto* notHim = new MessageDialog("Wrong reader");
                         notHim->exec();
                         delete notHim;
@@ -664,7 +809,13 @@ void MainWindow::MainWindow::getBookFromReader(const QString& name, const QStrin
 
                     else
                     {
-                        qDebug("Book %s %s is return by Reader %s %s", title.toStdString().c_str(), author.toStdString().c_str(), name.toStdString().c_str(), family.toStdString().c_str());
+                        #ifdef DEBUG
+                        qDebug("Returned S %p %p R", check.get(), guy->get());
+                        qDebug("Book %s %s is return by Reader %s %s",
+                               title.toStdString().c_str(), author.toStdString().c_str(),
+                               name.toStdString().c_str(), family.toStdString().c_str());
+                        #endif
+
                         search->get()->finishReading(check);
                         auto* finish = new MessageDialog("Book is returned");
                         finish->exec();
@@ -676,7 +827,10 @@ void MainWindow::MainWindow::getBookFromReader(const QString& name, const QStrin
 
         else
         {
-            qDebug("Book %s %s is not found (giveBook)", title.toStdString().c_str(), author.toStdString().c_str());
+            #ifdef DEBUG
+            qDebug("Book %s %s is not found2 (giveBook)", title.toStdString().c_str(), author.toStdString().c_str());
+            #endif
+
             auto* fail = new MessageDialog("Book is not found");
             fail->exec();
             delete fail;
@@ -693,9 +847,12 @@ void MainWindow::addSimpleBook(QString&& title, QString&& author, const std::siz
     if (theBook != bookSys->cend())
     {
         for (std::size_t i = 0; i < ind; i++)
-            theBook->addBook();
+            theBook->get()->addBook();
 
+        #ifdef DEBUG
         qDebug("Books %s %s are added number %zu", title.toStdString().c_str(), author.toStdString().c_str(), ind);
+        #endif
+
         auto* succes = new MessageDialog("Succesfully added");
         succes->exec();
         delete succes;
@@ -703,7 +860,10 @@ void MainWindow::addSimpleBook(QString&& title, QString&& author, const std::siz
 
     else
     {
+        #ifdef DEBUG
         qDebug("Book %s %s is not found", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Book is not found");
         fail->exec();
         delete fail;
@@ -717,9 +877,12 @@ void MainWindow::addSimpleBook(const QString& title, const QString& author, cons
     if (theBook != bookSys->cend())
     {
         for (std::size_t i = 0; i < ind; i++)
-            theBook->addBook();
+            theBook->get()->addBook();
 
+        #ifdef DEBUG
         qDebug("Books %s %s are added № %zu", title.toStdString().c_str(), author.toStdString().c_str(), ind);
+        #endif
+
         auto* succes = new MessageDialog("Succesfully added");
         succes->exec();
         delete succes;
@@ -727,7 +890,10 @@ void MainWindow::addSimpleBook(const QString& title, const QString& author, cons
 
     else
     {
+        #ifdef DEBUG
         qDebug("Book %s %s is not found", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Book is not found");
         fail->exec();
         delete fail;
@@ -740,8 +906,11 @@ void MainWindow::removeSimpleBook(QString&& title, QString&& author, const std::
 
     if (theBook != bookSys->cend())
     {
+        #ifdef DEBUG
         qDebug("Book %s %s № %zu is removed", title.toStdString().c_str(), author.toStdString().c_str(), ind);
-        theBook->removeBook(ind - 1);
+        #endif
+
+        theBook->get()->removeBook(ind - 1);
         auto* succes = new MessageDialog("Book is removed");
         succes->exec();
         delete succes;
@@ -749,7 +918,10 @@ void MainWindow::removeSimpleBook(QString&& title, QString&& author, const std::
 
     else
     {
+        #ifdef DEBUG
         qDebug("Book %s %s is not found", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Book is not found");
         fail->exec();
         delete fail;
@@ -762,8 +934,11 @@ void MainWindow::removeSimpleBook(const QString& title, const QString& author, c
 
     if (theBook != bookSys->cend())
     {
+        #ifdef DEBUG
         qDebug("Book %s %s № %zu is removed", title.toStdString().c_str(), author.toStdString().c_str(), ind);
-        theBook->removeBook(ind - 1);
+        #endif
+
+        theBook->get()->removeBook(ind - 1);
         auto* succes = new MessageDialog("Book is removed");
         succes->exec();
         delete succes;
@@ -771,7 +946,10 @@ void MainWindow::removeSimpleBook(const QString& title, const QString& author, c
 
     else
     {
+        #ifdef DEBUG
         qDebug("Book %s %s is not found", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Book is not found");
         fail->exec();
         delete fail;
@@ -786,7 +964,10 @@ void MainWindow::changeTitle(QString&& title, QString&& author, QString&& newTit
     {
         if (bookSys->find(newTitle, author) != bookSys->cend())
         {
+            #ifdef DEBUG
             qDebug("The Book %s %s is already exists", newTitle.toStdString().c_str(), author.toStdString().c_str());
+            #endif
+
             auto* fail = new MessageDialog("Book is already exist");
             fail->exec();
             delete fail;
@@ -794,8 +975,11 @@ void MainWindow::changeTitle(QString&& title, QString&& author, QString&& newTit
 
         else
         {
+            #ifdef DEBUG
             qDebug("The Book %s %s is changing title", title.toStdString().c_str(), author.toStdString().c_str());
-            theBook->changeTitle(newTitle);
+            #endif
+
+            theBook->get()->changeTitle(newTitle);
             auto* succes = new MessageDialog("Title changed");
             succes->exec();
             delete succes;
@@ -804,7 +988,10 @@ void MainWindow::changeTitle(QString&& title, QString&& author, QString&& newTit
 
     else
     {
+        #ifdef DEBUG
         qDebug("The Book %s %s is not found", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Book is not found");
         fail->exec();
         delete fail;
@@ -819,7 +1006,10 @@ void MainWindow::changeTitle(const QString& title, const QString& author, const 
     {
         if (bookSys->find(newTitle, author) != bookSys->cend())
         {
+            #ifdef DEBUG
             qDebug("The Book %s %s is already exists", newTitle.toStdString().c_str(), author.toStdString().c_str());
+            #endif
+
             auto* fail = new MessageDialog("Book is already exist");
             fail->exec();
             delete fail;
@@ -827,8 +1017,11 @@ void MainWindow::changeTitle(const QString& title, const QString& author, const 
 
         else
         {
+            #ifdef DEBUG
             qDebug("The Book %s %s is changing title", title.toStdString().c_str(), author.toStdString().c_str());
-            theBook->changeTitle(newTitle);
+            #endif
+
+            theBook->get()->changeTitle(newTitle);
             auto* succes = new MessageDialog("Title changed");
             succes->exec();
             delete succes;
@@ -837,7 +1030,10 @@ void MainWindow::changeTitle(const QString& title, const QString& author, const 
 
     else
     {
+        #ifdef DEBUG
         qDebug("The Book %s %s is not found", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Book is not found");
         fail->exec();
         delete fail;
@@ -852,7 +1048,10 @@ void MainWindow::changeAuthor(QString&& title, QString&& author, QString&& newAu
     {
         if (bookSys->find(title, newAuthor) != bookSys->cend())
         {
+            #ifdef DEBUG
             qDebug("The Book %s %s is already exists", title.toStdString().c_str(), newAuthor.toStdString().c_str());
+            #endif
+
             auto* fail = new MessageDialog("Book is already exist");
             fail->exec();
             delete fail;
@@ -860,8 +1059,11 @@ void MainWindow::changeAuthor(QString&& title, QString&& author, QString&& newAu
 
         else
         {
+            #ifdef DEBUG
             qDebug("The Book %s %s is changing author", title.toStdString().c_str(), author.toStdString().c_str());
-            theBook->changeAuthor(newAuthor);
+            #endif
+
+            theBook->get()->changeAuthor(newAuthor);
             auto* succes = new MessageDialog("Author changed");
             succes->exec();
             delete succes;
@@ -870,7 +1072,10 @@ void MainWindow::changeAuthor(QString&& title, QString&& author, QString&& newAu
 
     else
     {
+        #ifdef DEBUG
         qDebug("The Book %s %s is not found", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Book is not found");
         fail->exec();
         delete fail;
@@ -885,7 +1090,10 @@ void MainWindow::changeAuthor(const QString& title, const QString& author, const
     {
         if (bookSys->find(title, newAuthor) != bookSys->cend())
         {
+            #ifdef DEBUG
             qDebug("The Book %s %s is already exists", title.toStdString().c_str(), newAuthor.toStdString().c_str());
+            #endif
+
             auto* fail = new MessageDialog("Book is already exist");
             fail->exec();
             delete fail;
@@ -893,8 +1101,11 @@ void MainWindow::changeAuthor(const QString& title, const QString& author, const
 
         else
         {
+            #ifdef DEBUG
             qDebug("The Book %s %s is changing author", title.toStdString().c_str(), author.toStdString().c_str());
-            theBook->changeAuthor(newAuthor);
+            #endif
+
+            theBook->get()->changeAuthor(newAuthor);
             auto* succes = new MessageDialog("Author changed");
             succes->exec();
             delete succes;
@@ -903,7 +1114,10 @@ void MainWindow::changeAuthor(const QString& title, const QString& author, const
 
     else
     {
+        #ifdef DEBUG
         qDebug("The Book %s %s is not found", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Book is not found");
         fail->exec();
         delete fail;
@@ -918,7 +1132,10 @@ void MainWindow::changeName(QString&& name, QString&& family, QString&& newName)
     {
         if (readSys->find(newName, family) != readSys->cend())
         {
+            #ifdef DEBUG
             qDebug("Reader %s %s is already exists", newName.toStdString().c_str(), family.toStdString().c_str());
+            #endif
+
             auto* fail = new MessageDialog("Reader is already exist");
             fail->exec();
             delete fail;
@@ -926,8 +1143,11 @@ void MainWindow::changeName(QString&& name, QString&& family, QString&& newName)
 
         else
         {
+            #ifdef DEBUG
             qDebug("Reader %s %s is changing name", name.toStdString().c_str(), family.toStdString().c_str());
-            reader->changeName(newName);
+            #endif
+
+            reader->get()->changeName(newName);
             auto* succes = new MessageDialog("Name changed");
             succes->exec();
             delete succes;
@@ -936,7 +1156,10 @@ void MainWindow::changeName(QString&& name, QString&& family, QString&& newName)
 
     else
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is not found", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is not found");
         fail->exec();
         delete fail;
@@ -951,7 +1174,10 @@ void MainWindow::changeName(const QString& name, const QString& family, const QS
     {
         if (readSys->find(newName, family) != readSys->cend())
         {
+            #ifdef DEBUG
             qDebug("Reader %s %s is already exists", newName.toStdString().c_str(), family.toStdString().c_str());
+            #endif
+
             auto* fail = new MessageDialog("Reader is already exist");
             fail->exec();
             delete fail;
@@ -959,8 +1185,11 @@ void MainWindow::changeName(const QString& name, const QString& family, const QS
 
         else
         {
+            #ifdef DEBUG
             qDebug("Reader %s %s is changing name", name.toStdString().c_str(), family.toStdString().c_str());
-            reader->changeName(newName);
+            #endif
+
+            reader->get()->changeName(newName);
             auto* succes = new MessageDialog("Name changed");
             succes->exec();
             delete succes;
@@ -969,7 +1198,10 @@ void MainWindow::changeName(const QString& name, const QString& family, const QS
 
     else
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is not found", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is not found");
         fail->exec();
         delete fail;
@@ -984,7 +1216,10 @@ void MainWindow::changeFamily(QString&& name, QString&& family, QString&& newFam
     {
         if (readSys->find(name, newFamily) != readSys->cend())
         {
+            #ifdef DEBUG
             qDebug("Reader %s %s is already exists", name.toStdString().c_str(), newFamily.toStdString().c_str());
+            #endif
+
             auto* fail = new MessageDialog("Reader is already exist");
             fail->exec();
             delete fail;
@@ -992,8 +1227,11 @@ void MainWindow::changeFamily(QString&& name, QString&& family, QString&& newFam
 
         else
         {
+            #ifdef DEBUG
             qDebug("Reader %s %s is changing name", name.toStdString().c_str(), family.toStdString().c_str());
-            reader->changeName(newFamily);
+            #endif
+
+            reader->get()->changeName(newFamily);
             auto* succes = new MessageDialog("Name changed");
             succes->exec();
             delete succes;
@@ -1002,7 +1240,10 @@ void MainWindow::changeFamily(QString&& name, QString&& family, QString&& newFam
 
     else
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is not found", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is not found");
         fail->exec();
         delete fail;
@@ -1017,7 +1258,10 @@ void MainWindow::changeFamily(const QString& name, const QString& family, const 
     {
         if (readSys->find(name, newFamily) != readSys->cend())
         {
+            #ifdef DEBUG
             qDebug("Reader %s %s is already exists", name.toStdString().c_str(), newFamily.toStdString().c_str());
+            #endif
+
             auto* fail = new MessageDialog("Reader is already exist");
             fail->exec();
             delete fail;
@@ -1025,8 +1269,11 @@ void MainWindow::changeFamily(const QString& name, const QString& family, const 
 
         else
         {
+            #ifdef DEBUG
             qDebug("Reader %s %s is changing name", name.toStdString().c_str(), family.toStdString().c_str());
-            reader->changeName(newFamily);
+            #endif
+
+            reader->get()->changeName(newFamily);
             auto* succes = new MessageDialog("Name changed");
             succes->exec();
             delete succes;
@@ -1035,7 +1282,10 @@ void MainWindow::changeFamily(const QString& name, const QString& family, const 
 
     else
     {
+        #ifdef DEBUG
         qDebug("Reader %s %s is not found", name.toStdString().c_str(), family.toStdString().c_str());
+        #endif
+
         auto* fail = new MessageDialog("Reader is not found");
         fail->exec();
         delete fail;

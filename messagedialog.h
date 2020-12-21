@@ -1,6 +1,12 @@
 #ifndef MESSAGEDIALOG_H
 #define MESSAGEDIALOG_H
 
+#include <debug.h>
+
+#ifdef RELEASE
+#undef DEBUG
+#endif
+
 #include <QDialog>
 #include <QString>
 #include <QLabel>

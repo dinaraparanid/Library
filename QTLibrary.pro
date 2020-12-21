@@ -20,6 +20,7 @@ SOURCES += \
 HEADERS += \
     book.h \
     changemenu.h \
+    debug.h \
     mainwindow.h \
     messagedialog.h \
     reader.h \

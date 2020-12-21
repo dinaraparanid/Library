@@ -1,3 +1,9 @@
+#include <debug.h>
+
+#ifdef RELEASE
+#undef DEBUG
+#endif
+
 #include "messagedialog.h"
 
 MessageDialog::MessageDialog(QString&& mesg) noexcept :

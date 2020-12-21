@@ -1,6 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <debug.h>
+
+#ifdef RELEASE
+#undef DEBUG
+#endif
+
 #include <book.h>
 
 #include <QMainWindow>
@@ -27,8 +33,8 @@ public:
     void changeAuthor(QString&&, QString&&, QString&&)                                                      noexcept;
     void changeAuthor(const QString&, const QString&, const QString&)                                       noexcept;
 
-    void addSimpleBook(QString&&, QString&&, std::size_t)                                                                noexcept;
-    void addSimpleBook(const QString&, const QString&, std::size_t)                                                      noexcept;
+    void addSimpleBook(QString&&, QString&&, std::size_t)                                                   noexcept;
+    void addSimpleBook(const QString&, const QString&, std::size_t)                                         noexcept;
     void removeSimpleBook(QString&&, QString&&, std::size_t)                                                noexcept;
     void removeSimpleBook(const QString&, const QString&, std::size_t)                                      noexcept;
 
