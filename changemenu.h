@@ -3,10 +3,6 @@
 
 #include <debug.h>
 
-#ifdef RELEASE
-#undef DEBUG
-#endif
-
 #include <memory>
 
 #include "submenu.h"
@@ -28,7 +24,7 @@ namespace chng
     public:
         explicit AbstractInput (QString&& title) : menu_(new SubMenu(title)) {}
         explicit AbstractInput (const QString& title) : menu_(new SubMenu(title)) {}
-        virtual ~AbstractInput() { delete menu_; }
+        virtual ~AbstractInput() noexcept { delete menu_; }
 
     public slots:
         virtual void setInput() = 0;

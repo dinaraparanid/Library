@@ -1,9 +1,5 @@
 #include <debug.h>
 
-#ifdef RELEASE
-#undef DEBUG
-#endif
-
 #include "messagedialog.h"
 
 MessageDialog::MessageDialog(QString&& mesg) noexcept :
@@ -14,7 +10,7 @@ MessageDialog::MessageDialog(QString&& mesg) noexcept :
     setFixedSize(size());
     setWindowTitle(mesg_.text());
 
-    ok_->setGeometry(320, 100, 75, 25);
+    ok_->setGeometry(400, 100, 75, 25);
     mesg_.setFont(QFont("Times", 18, 5));
     mesg_.setGeometry(150, 50, 300, 30);
 
@@ -29,7 +25,7 @@ MessageDialog::MessageDialog(const QString& mesg) noexcept :
     setFixedSize(size());
     setWindowTitle(mesg_.text());
 
-    ok_->setGeometry(320, 100, 75, 25);
+    ok_->setGeometry(400, 100, 75, 25);
     mesg_.setFont(QFont("Calibri", 18, 5));
     mesg_.setGeometry(100, 50, 300, 30);
 

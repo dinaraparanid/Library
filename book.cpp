@@ -1,9 +1,5 @@
 #include <debug.h>
 
-#ifdef RELEASE
-#undef DEBUG
-#endif
-
 #include "book.h"
 #include "reader.h"
 #include "messagedialog.h"
@@ -142,6 +138,11 @@ bool booksys::BookSystem::removeBook(std::shared_ptr<booksys::TheBook> theBook) 
 
     if (search != books_.end())
     {
+        while (!search->get()->books_.empty())
+        {
+
+        }
+
         books_.erase(search);
         return true;
     }
@@ -155,6 +156,11 @@ bool booksys::BookSystem::removeBook(QString&& title, QString&& author) noexcept
 
     if (search != books_.end())
     {
+        #ifdef DEBUG
+        qDebug("removeBook %s %s from BookSys", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
+        search->get()->removeAllBooks();
         books_.erase(search);
         return true;
     }
@@ -168,6 +174,11 @@ bool booksys::BookSystem::removeBook(const QString& title, const QString& author
 
     if (search != books_.end())
     {
+        #ifdef DEBUG
+        qDebug("removeBook %s %s from BookSys", title.toStdString().c_str(), author.toStdString().c_str());
+        #endif
+
+        search->get()->removeAllBooks();
         books_.erase(search);
         return true;
     }
@@ -270,4 +281,86 @@ void booksys::TheBook::changeAuthor(const QString& author) noexcept
     author_ = author;
     std::for_each(books_.begin(), books_.end(),
                   [&author] (std::shared_ptr<booksys::Book> b) { b->changeAuthor(author); });
+}
+
+void booksys::TheBook::removeBook(std::size_t ind) noexcept
+{
+    if (--ind > static_cast<std::size_t>(books_.size()))
+    {
+        auto* fail = new MessageDialog("Incorrect number");
+        fail->exec();
+        delete fail;
+    }
+
+    else
+    {
+        while (!books_[ind]->readers_.empty())
+        {
+            #ifdef DEBUG
+            qDebug("The Book remove 1 book %s %s", title_.toStdString().c_str(), author_.toStdString().c_str());
+            #endif
+
+            books_[ind]->readers_[0].first.get()->removeBook(title_, author_);
+        }
+
+        books_.erase(books_.begin() + ind);
+    }
+}
+
+QVector<std::pair<std::shared_ptr<read::Reader>, std::pair<booksys::date, booksys::date>>>::iterator
+booksys::Book::findReader(std::shared_ptr<read::Reader> reader) noexcept
+{
+    for (auto it = readers_.begin(); it != readers_.end(); ++it)
+        if (it->first == reader)
+            return it;
+
+    return readers_.end();
+}
+
+QVector<std::pair<std::shared_ptr<read::Reader>, std::pair<booksys::date, booksys::date>>>::iterator
+booksys::Book::findReader(QString&& name, QString&& family) noexcept
+{
+    for (auto it = readers_.begin(); it != readers_.end(); ++it)
+        if (it->first->getName() == name && it->first->getFamily() == family)
+            return it;
+
+    return readers_.end();
+}
+
+QVector<std::pair<std::shared_ptr<read::Reader>, std::pair<booksys::date, booksys::date>>>::iterator
+booksys::Book::findReader(const QString& name, const QString& family) noexcept
+{
+    for (auto it = readers_.begin(); it != readers_.end(); ++it)
+        if (it->first->getName() == name && it->first->getFamily() == family)
+            return it;
+
+    return readers_.end();
+}
+
+void booksys::Book::removeReader(const QString& name, const QString& family) noexcept
+{
+    const auto search = findReader(name, family);
+
+    #ifdef DEBUG
+    qDebug("Book remove reader %s %s", name.toStdString().c_str(), family.toStdString().c_str());
+    qDebug("S %s %s R %s %s",
+           name.toStdString().c_str(), family.toStdString().c_str(),
+           search->first->getName().toStdString().c_str(),
+           search->first->getFamily().toStdString().c_str());
+    for (auto reader : readers_)
+        qDebug("reader %s %s",
+               reader.first->getName().toStdString().c_str(),
+               reader.first->getFamily().toStdString().c_str());
+
+    #endif
+
+    if (search != readers_.end())
+        readers_.pop_back();
+
+    else
+    {
+        auto* fail = new MessageDialog("Reader not found");
+        fail->exec();
+        delete fail;
+    }
 }

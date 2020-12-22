@@ -3,14 +3,11 @@
 
 #include <debug.h>
 
-#ifdef RELEASE
-#undef DEBUG
-#endif
-
 #include <memory>
 
 #include <QVector>
 #include <QString>
+#include <QJsonObject>
 
 #include "book.h"
 
@@ -22,30 +19,35 @@ namespace read
 
         QString name_;
         QString family_;
-        QVector<std::shared_ptr<booksys::Book>> books_; // books he've read
+        QVector<std::weak_ptr<booksys::Book>> books_; // books he've read
 
     public:
 
         Reader(QString&& name, QString&& family)                noexcept : name_(name), family_(family) {}
         Reader(const QString& name, const QString& family)      noexcept : name_(name), family_(family) {}
-        ~Reader() = default;
+        ~Reader() { qDebug("Reader deleted"); }
 
-        [[nodiscard]] bool late()                                   noexcept { return *books_.back()->readers_.back().first == *this && books_.back()->isUse(); }
+        [[nodiscard]] bool late()                                   noexcept { return *books_.back().lock()->readers_.back().first == *this && books_.back().lock()->isUse(); }
         [[nodiscard]] bool operator==(const Reader& reader)   const noexcept { return name_ == reader.name_ && family_ == reader.family_; }
         [[nodiscard]] bool operator!=(const Reader& reader)   const noexcept { return !(*this == reader); }
 
         [[nodiscard]] QString getName()                       const noexcept { return name_; }
         [[nodiscard]] QString getFamily()                     const noexcept { return family_; }
 
-        [[nodiscard]] QVector<std::shared_ptr<booksys::Book>>::reverse_iterator findBook(QString&&, QString&&)              noexcept;
-        [[nodiscard]] QVector<std::shared_ptr<booksys::Book>>::reverse_iterator findBook(const QString&, const QString&)    noexcept;
-        [[nodiscard]] QVector<std::shared_ptr<booksys::Book>>::const_reverse_iterator crend() const noexcept { return books_.crend(); }
+        [[nodiscard]] QVector<std::weak_ptr<booksys::Book>>::reverse_iterator findBook(std::weak_ptr<booksys::Book>)    noexcept;
+        [[nodiscard]] QVector<std::weak_ptr<booksys::Book>>::reverse_iterator findBook(QString&&, QString&&)            noexcept;
+        [[nodiscard]] QVector<std::weak_ptr<booksys::Book>>::reverse_iterator findBook(const QString&, const QString&)  noexcept;
+        [[nodiscard]] QVector<std::weak_ptr<booksys::Book>>::const_reverse_iterator crend() const noexcept { return books_.crend(); }
 
-        void startReading(std::shared_ptr<booksys::Book> book)  noexcept;
-        void changeName(QString&& name)                         noexcept { name_ = name; }
-        void changeName(const QString& name)                    noexcept { name_ = name; }
-        void changeFamily(QString&& family)                     noexcept { family_ = family; }
-        void changeFamily(const QString& family)                noexcept { family_ = family; }
+        void startReading(std::weak_ptr<booksys::Book> book)            noexcept;
+        void changeName(QString&& name)                                 noexcept { name_ = name; }
+        void changeName(const QString& name)                            noexcept { name_ = name; }
+        void changeFamily(QString&& family)                             noexcept { family_ = family; }
+        void changeFamily(const QString& family)                        noexcept { family_ = family; }
+        void removeBook(std::weak_ptr<booksys::Book>)                   noexcept;
+        void removeBook(QString&&, QString&&)                           noexcept;
+        void removeBook(const QString&, const QString&)                 noexcept;
+        void removeAllBooks()                                           noexcept;
     };
 
     class ReaderBase
@@ -61,15 +63,15 @@ namespace read
         ReaderBase& operator= (ReaderBase&&)        = delete;
         ~ReaderBase()                               = default;
 
-        [[nodiscard]] bool removeReader(std::shared_ptr<Reader>)                      noexcept;
-        [[nodiscard]] bool removeReader(QString&&, QString&&)                         noexcept;
-        [[nodiscard]] bool removeReader(const QString&, const QString&)               noexcept;
+        [[nodiscard]] bool removeReader(std::shared_ptr<Reader>)                        noexcept;
+        [[nodiscard]] bool removeReader(QString&&, QString&&)                           noexcept;
+        [[nodiscard]] bool removeReader(const QString&, const QString&)                 noexcept;
 
-        [[nodiscard]] static std::shared_ptr<ReaderBase> getInstance()                noexcept;
+        [[nodiscard]] static std::shared_ptr<ReaderBase> getInstance()                  noexcept;
 
-        [[nodiscard]] bool addReader(std::shared_ptr<Reader>)                         noexcept;
-        [[nodiscard]] bool addReader(QString&&, QString&&)                            noexcept;
-        [[nodiscard]] bool addReader(const QString&, const QString&)                  noexcept;
+        [[nodiscard]] bool addReader(std::shared_ptr<Reader>)                           noexcept;
+        [[nodiscard]] bool addReader(QString&&, QString&&)                              noexcept;
+        [[nodiscard]] bool addReader(const QString&, const QString&)                    noexcept;
 
         [[nodiscard]] QVector<std::shared_ptr<Reader>>::iterator find(std::shared_ptr<Reader>)         noexcept;
         [[nodiscard]] QVector<std::shared_ptr<Reader>>::iterator find(QString&&, QString&&)            noexcept;

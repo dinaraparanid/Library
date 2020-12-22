@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     book.cpp \
     changemenu.cpp \
+    information.cpp \
     main.cpp \
     mainwindow.cpp \
     messagedialog.cpp \
@@ -21,6 +22,7 @@ HEADERS += \
     book.h \
     changemenu.h \
     debug.h \
+    information.h \
     mainwindow.h \
     messagedialog.h \
     reader.h \

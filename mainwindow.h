@@ -3,10 +3,6 @@
 
 #include <debug.h>
 
-#ifdef RELEASE
-#undef DEBUG
-#endif
-
 #include <book.h>
 
 #include <QMainWindow>
@@ -54,6 +50,7 @@ public:
     void giveBookToReader(const QString&, const QString&, const QString&, const QString&, booksys::date)    noexcept;
     void getBookFromReader(QString&&, QString&&, QString&&, QString&&)                                      noexcept;
     void getBookFromReader(const QString&, const QString&, const QString&, const QString&)                  noexcept;
+    void save()                                                                                             noexcept;
 
 signals:
     void pressedAddBook();

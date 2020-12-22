@@ -3,10 +3,6 @@
 
 #include <debug.h>
 
-#ifdef RELEASE
-#undef DEBUG
-#endif
-
 #include <QDialog>
 #include <QLabel>
 #include <QPushButton>
@@ -22,7 +18,7 @@ public:
 
     SubMenu(QString&&)       noexcept;
     SubMenu(const QString&)  noexcept;
-    ~SubMenu() { delete ok_; delete cancel_; }
+    ~SubMenu() noexcept { delete ok_; delete cancel_; }
 };
 
 #endif // SUBMENU_H

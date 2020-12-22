@@ -1,12 +1,9 @@
 #include <debug.h>
 
-#ifdef RELEASE
-#undef DEBUG
-#endif
-
 #include <mainwindow.h>
 #include <changemenu.h>
 #include <messagedialog.h>
+#include <information.h>
 #include <reader.h>
 #include <book.h>
 
@@ -304,11 +301,17 @@ void MainWindow::removeBook(const QString& title, const QString& author) noexcep
 
 void MainWindow::findBook(QString&& title, QString&& author) noexcept
 {
-    if (bookSys->find(title, author) != bookSys->cend())
+    const auto search = bookSys->find(title, author);
+
+    if (search != bookSys->cend())
     {
         #ifdef DEBUG
         qDebug("The book %s %s is found", title.toStdString().c_str(), author.toStdString().c_str());
         #endif
+
+        auto* bookInfo = new TheBookInformation(title + " " + author, title, author, search->get()->getBooksAmount());
+        bookInfo->exec();
+        delete bookInfo;
     }
 
     else
@@ -327,11 +330,17 @@ void MainWindow::findBook(QString&& title, QString&& author) noexcept
 
 void MainWindow::findBook(const QString& title, const QString& author) noexcept
 {
-    if (bookSys->find(title, author) != bookSys->cend())
+    const auto search = bookSys->find(title, author);
+
+    if (search != bookSys->cend())
     {
         #ifdef DEBUG
         qDebug("The book %s %s is found", title.toStdString().c_str(), author.toStdString().c_str());
         #endif
+
+        auto* bookInfo = new TheBookInformation(title + " " + author, title, author, search->get()->getBooksAmount());
+        bookInfo->exec();
+        delete bookInfo;
     }
 
     else
@@ -345,7 +354,7 @@ void MainWindow::findBook(const QString& title, const QString& author) noexcept
         delete fail;
     }
 
-    pressedFindBook();
+    emit pressedFindBook();
 }
 
 void MainWindow::addReader(QString&& name, QString&& family) noexcept
@@ -666,7 +675,7 @@ void MainWindow::MainWindow::getBookFromReader(QString&& name, QString&& family,
             if (search == guy->get()->crend())
             {
                 #ifdef DEBUG
-                qDebug("S %p %p R", search->get(), book->get());
+                qDebug("S %p %p R", search->lock().get(), book->get());
                 qDebug("Book %s %s is not found1 (getBook)", title.toStdString().c_str(), author.toStdString().c_str());
                 #endif
 
@@ -677,7 +686,7 @@ void MainWindow::MainWindow::getBookFromReader(QString&& name, QString&& family,
 
             else
             {
-                if (!search->get()->isUse())
+                if (!search->lock().get()->isUse())
                 {
                     #ifdef DEBUG
                     qDebug("Book %s %s is not used (getBook)", title.toStdString().c_str(), author.toStdString().c_str());
@@ -690,7 +699,7 @@ void MainWindow::MainWindow::getBookFromReader(QString&& name, QString&& family,
 
                 else
                 {
-                    const auto check = search->get()->getLastReader()->first;
+                    const auto check = search->lock().get()->getLastReader()->first;
 
                     if (check->getName() != name || check->getFamily() != family)
                     {
@@ -715,7 +724,7 @@ void MainWindow::MainWindow::getBookFromReader(QString&& name, QString&& family,
                                title.toStdString().c_str(), author.toStdString().c_str(), name.toStdString().c_str(), family.toStdString().c_str());
                         #endif
 
-                        search->get()->finishReading(check);
+                        search->lock().get()->finishReading(check);
                         auto* finish = new MessageDialog("Book is returned");
                         finish->exec();
                         delete finish;
@@ -766,7 +775,7 @@ void MainWindow::MainWindow::getBookFromReader(const QString& name, const QStrin
             if (search == guy->get()->crend())
             {
                 #ifdef DEBUG
-                qDebug("S %p %p R", search->get(), book->get());
+                qDebug("S %p %p R", search->lock().get(), book->get());
                 qDebug("Book %s %s is not found1 (getBook)", title.toStdString().c_str(), author.toStdString().c_str());
                 #endif
 
@@ -777,7 +786,7 @@ void MainWindow::MainWindow::getBookFromReader(const QString& name, const QStrin
 
             else
             {
-                if (!search->get()->isUse())
+                if (!search->lock().get()->isUse())
                 {
                     #ifdef DEBUG
                     qDebug("Book %s %s is not used (getBook)", title.toStdString().c_str(), author.toStdString().c_str());
@@ -790,7 +799,7 @@ void MainWindow::MainWindow::getBookFromReader(const QString& name, const QStrin
 
                 else
                 {
-                    const auto check = search->get()->getLastReader()->first;
+                    const auto check = search->lock().get()->getLastReader()->first;
 
                     if (check->getName() != name || check->getFamily() != family)
                     {
@@ -816,7 +825,7 @@ void MainWindow::MainWindow::getBookFromReader(const QString& name, const QStrin
                                name.toStdString().c_str(), family.toStdString().c_str());
                         #endif
 
-                        search->get()->finishReading(check);
+                        search->lock().get()->finishReading(check);
                         auto* finish = new MessageDialog("Book is returned");
                         finish->exec();
                         delete finish;

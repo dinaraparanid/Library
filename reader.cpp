@@ -1,9 +1,5 @@
 #include <debug.h>
 
-#ifdef RELEASE
-#undef DEBUG
-#endif
-
 #include "reader.h"
 
 std::shared_ptr<read::ReaderBase>read::ReaderBase::instance_;
@@ -125,6 +121,7 @@ bool read::ReaderBase::removeReader(std::shared_ptr<read::Reader> reader) noexce
 
     if (search != readers_.end())
     {
+        search->get()->removeAllBooks();
         readers_.erase(search);
         return true;
     }
@@ -138,6 +135,7 @@ bool read::ReaderBase::removeReader(QString&& name, QString&& family) noexcept
 
     if (search != readers_.end())
     {
+        search->get()->removeAllBooks();
         readers_.erase(search);
         return true;
     }
@@ -151,6 +149,7 @@ bool read::ReaderBase::removeReader(const QString& name, const QString& family) 
 
     if (search != readers_.end())
     {
+        search->get()->removeAllBooks();
         readers_.erase(search);
         return true;
     }
@@ -158,41 +157,91 @@ bool read::ReaderBase::removeReader(const QString& name, const QString& family) 
     return false;
 }
 
-QVector<std::shared_ptr<booksys::Book>>::reverse_iterator read::Reader::findBook(QString&& title, QString&& author)  noexcept
+QVector<std::weak_ptr<booksys::Book>>::reverse_iterator read::Reader::findBook(std::weak_ptr<booksys::Book> book)  noexcept
 {
     for (auto it = books_.rbegin(); it != books_.rend(); ++it)
     {
         #ifdef DEBUG
-        qDebug("Reader findBook %s %s %p", it->get()->title_.toStdString().c_str(), it->get()->author_.toStdString().c_str(), it->get());
+        qDebug("Reader findBook %s %s %p", it->lock()->title_.toStdString().c_str(), it->lock()->author_.toStdString().c_str(), it->lock().get());
         #endif
 
-        if (it->get()->title_ == title && it->get()->author_ == author)
+        if (it->lock()->title_ == book.lock()->title_ && it->lock()->author_ == book.lock()->author_)
             return it;
     }
 
     return books_.rend();
 }
 
-QVector<std::shared_ptr<booksys::Book>>::reverse_iterator read::Reader::findBook(const QString& title, const QString& author)  noexcept
+QVector<std::weak_ptr<booksys::Book>>::reverse_iterator read::Reader::findBook(QString&& title, QString&& author)  noexcept
 {
     for (auto it = books_.rbegin(); it != books_.rend(); ++it)
     {
         #ifdef DEBUG
-        qDebug("Reader findBook %s %s %p", it->get()->title_.toStdString().c_str(), it->get()->author_.toStdString().c_str(), it->get());
+        qDebug("Reader findBook %s %s %p", it->lock()->title_.toStdString().c_str(), it->lock()->author_.toStdString().c_str(), it->lock().get());
         #endif
 
-        if (it->get()->title_ == title && it->get()->author_ == author)
+        if (it->lock()->title_ == title && it->lock()->author_ == author)
             return it;
     }
 
     return books_.rend();
 }
 
-void read::Reader::startReading(std::shared_ptr<booksys::Book> book) noexcept
+QVector<std::weak_ptr<booksys::Book>>::reverse_iterator read::Reader::findBook(const QString& title, const QString& author)  noexcept
+{
+    for (auto it = books_.rbegin(); it != books_.rend(); ++it)
+    {
+        #ifdef DEBUG
+        qDebug("Reader findBook %s %s %p", it->lock()->title_.toStdString().c_str(), it->lock()->author_.toStdString().c_str(), it->lock().get());
+        #endif
+
+        if (it->lock()->title_ == title && it->lock()->author_ == author)
+            return it;
+    }
+
+    return books_.rend();
+}
+
+void read::Reader::startReading(std::weak_ptr<booksys::Book> book) noexcept
 {
     books_.push_back(book);
 
-#ifdef DEBUG
-    qDebug("reader start reading %s %s %p", book->title_.toStdString().c_str(), book->author_.toStdString().c_str(), book.get());
-#endif
+    #ifdef DEBUG
+    qDebug("reader start reading %s %s %p", book.lock()->title_.toStdString().c_str(), book.lock()->author_.toStdString().c_str(), book.lock().get());
+    #endif
+}
+
+void read::Reader::removeBook(std::weak_ptr<booksys::Book> book) noexcept
+{
+    book.lock()->removeReader(name_, family_);
+    books_.erase(findBook(book).base());
+}
+
+void read::Reader::removeBook(QString&& name, QString&& family) noexcept
+{
+    auto book = findBook(name, family);
+    book->lock()->removeReader(name_, family_);
+}
+
+void read::Reader::removeBook(const QString& name, const QString& family) noexcept
+{
+    auto book = findBook(name, family);
+
+    #ifdef DEBUG
+    qDebug("Reader remove book %s %s", book->lock()->title_.toStdString().c_str(), book->lock()->author_.toStdString().c_str());
+    #endif
+
+    book->lock()->removeReader(name_, family_);
+}
+
+void read::Reader::removeAllBooks() noexcept
+{
+    for (auto book : books_)
+        qDebug() << book.lock()->title_ << " " << book.lock()->author_;
+
+    while (!books_.empty())
+    {
+        removeBook(books_[0].lock()->title_, books_[0].lock()->author_);
+        books_.pop_front();
+    }
 }

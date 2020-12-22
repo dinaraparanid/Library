@@ -3,10 +3,6 @@
 
 #include <debug.h>
 
-#ifdef RELEASE
-#undef DEBUG
-#endif
-
 #include <QDialog>
 #include <QString>
 #include <QLabel>
@@ -19,7 +15,7 @@ class MessageDialog : public QDialog
 public:
     explicit MessageDialog(QString&&)      noexcept;
     explicit MessageDialog(const QString&) noexcept;
-    ~MessageDialog() { delete ok_; }
+    ~MessageDialog() noexcept { delete ok_; }
 
 private:
     QLabel mesg_;

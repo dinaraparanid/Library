@@ -1,9 +1,5 @@
 #include <debug.h>
 
-#ifdef RELEASE
-#undef DEBUG
-#endif
-
 #include "submenu.h"
 
 SubMenu::SubMenu(QString&& title) noexcept :

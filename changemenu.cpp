@@ -1,9 +1,5 @@
 #include <debug.h>
 
-#ifdef RELEASE
-#undef DEBUG
-#endif
-
 #include "changemenu.h"
 #include "messagedialog.h"
 
