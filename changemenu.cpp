@@ -288,7 +288,7 @@ void chng::Input3::setInput()
 
                     if (imonth != 1)
                     {
-                        if (iday <= days[imonth])
+                        if (iday <= days[imonth - 1])
                             goto OK;
 
                         else // iday > days[imonth]

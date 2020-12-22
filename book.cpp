@@ -138,11 +138,11 @@ bool booksys::BookSystem::removeBook(std::shared_ptr<booksys::TheBook> theBook) 
 
     if (search != books_.end())
     {
-        while (!search->get()->books_.empty())
-        {
+        #ifdef DEBUG
+        qDebug("removeBook %s %s from BookSys", search->get()->title_.toStdString().c_str(), search->get()->author_.toStdString().c_str());
+        #endif
 
-        }
-
+        search->get()->removeAllBooks();
         books_.erase(search);
         return true;
     }
