@@ -309,7 +309,7 @@ void MainWindow::findBook(QString&& title, QString&& author) noexcept
         qDebug("The book %s %s is found", title.toStdString().c_str(), author.toStdString().c_str());
         #endif
 
-        auto* bookInfo = new TheBookInformation(title + " " + author, title, author, search->get()->getBooksAmount());
+        auto* bookInfo = new info::TheBookInformation(title, author, search->get()->getBooksAmount());
         bookInfo->exec();
         delete bookInfo;
     }
@@ -338,7 +338,7 @@ void MainWindow::findBook(const QString& title, const QString& author) noexcept
         qDebug("The book %s %s is found", title.toStdString().c_str(), author.toStdString().c_str());
         #endif
 
-        auto* bookInfo = new TheBookInformation(title + " " + author, title, author, search->get()->getBooksAmount());
+        auto* bookInfo = new info::TheBookInformation(title, author, search->get()->getBooksAmount());
         bookInfo->exec();
         delete bookInfo;
     }
@@ -467,11 +467,16 @@ void MainWindow::removeReader(const QString& name, const QString& family) noexce
 
 void MainWindow::findReader(QString&& name, QString&& family) noexcept
 {
-    if (readSys->find(name, family) != readSys->cend())
+    const auto search = readSys->find(name, family);
+
+    if (search != readSys->cend())
     {
         #ifdef DEBUG
         qDebug("Reader %s %s is found", name.toStdString().c_str(), family.toStdString().c_str());
         #endif
+
+        auto* readerInfo = new info::ReaderInformation(*search);
+        readerInfo->show();
     }
 
     else
@@ -490,11 +495,16 @@ void MainWindow::findReader(QString&& name, QString&& family) noexcept
 
 void MainWindow::findReader(const QString& name, const QString& family) noexcept
 {
-    if (readSys->find(name, family) != readSys->cend())
+    const auto search = readSys->find(name, family);
+
+    if (search != readSys->cend())
     {
         #ifdef DEBUG
-        qDebug("Reader %s %s is added", name.toStdString().c_str(), family.toStdString().c_str());
+        qDebug("Reader %s %s is found", name.toStdString().c_str(), family.toStdString().c_str());
         #endif
+
+        auto* readerInfo = new info::ReaderInformation(*search);
+        readerInfo->show();
     }
 
     else

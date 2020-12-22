@@ -11,11 +11,14 @@
 
 #include "book.h"
 
+namespace info { class ReaderInformation; }
+
 namespace read
 {
     class Reader : std::enable_shared_from_this<Reader> // just 1 man
     {
         friend class ReaderBase;
+        friend class info::ReaderInformation;
 
         QString name_;
         QString family_;
