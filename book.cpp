@@ -285,7 +285,7 @@ void booksys::TheBook::changeAuthor(const QString& author) noexcept
 
 void booksys::TheBook::removeBook(std::size_t ind) noexcept
 {
-    if (--ind > static_cast<std::size_t>(books_.size()))
+    if (ind-- > static_cast<std::size_t>(books_.size()))
     {
         auto* fail = new MessageDialog("Incorrect number");
         fail->exec();
